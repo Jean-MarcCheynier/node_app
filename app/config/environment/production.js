@@ -1,0 +1,26 @@
+'use strict';
+
+// Production specific configuration
+// =================================
+module.exports = {
+  // Server IP
+  ip:       process.env.OPENSHIFT_NODEJS_IP ||
+            process.env.IP || 
+            undefined,
+
+  // Server port
+  port:     process.env.OPENSHIFT_NODEJS_PORT ||
+            process.env.PORT ||
+            8001,
+
+// MongoDB connection options - let password and username empty if no auth;
+  mongo: {
+    uri:    process.env.MONGO_URI ||
+            process.env.MONGOHQ_URL ||
+            process.env.OPENSHIFT_MONGODB_DB_URL+process.env.OPENSHIFT_APP_NAME || 
+            'my_mongo_uri',
+    username : process.env.MONGO_USERNAME || "",
+    password : process.env.MONGO_PASSWORD || "",
+    
+  }
+};

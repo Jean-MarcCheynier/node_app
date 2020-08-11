@@ -1,0 +1,226 @@
+[
+    { 
+        "index": 1,
+        "name": "russia",
+        "groupRank": 1,
+        "countryCode":"ru",
+        "country": "russia"
+    },
+    { 
+        "index": 2,
+        "name": "uruguay",
+        "groupRank": 2,
+        "countryCode":"uy",
+        "country": "uruguay"
+    },
+    { 
+        "index": 3,
+        "name": "egypt",
+        "groupRank": 3,
+        "countryCode":"eg",
+        "country": "egypt"
+    },
+    { 
+        "index": 4,
+        "name": "saudi arabia",
+        "groupRank": 4,
+        "countryCode":"sa",
+        "country": "saudi arabia"
+    },
+    { 
+        "index": 5,
+        "name": "porgutal",
+        "groupRank": 1,
+        "countryCode":"pt",
+        "country": "porgutal"
+    },
+    { 
+        "index": 6,
+        "name": "spain",
+        "groupRank": 2,
+        "countryCode":"es",
+        "country": "spain"
+    },
+    { 
+        "index": 7,
+        "name": "morocco",
+        "groupRank": 3,
+        "countryCode":"ma",
+        "country": "morocco"
+    },
+    { 
+        "index": 8,
+        "name": "iran",
+        "groupRank": 4,
+        "countryCode":"ir",
+        "country": "iran"
+    },
+    { 
+        "index": 9,
+        "name": "france",
+        "groupRank": 1,
+        "countryCode":"fr",
+        "country": "france"
+    },
+    { 
+        "index": 10,
+        "name": "perou",
+        "groupRank": 2,
+        "countryCode":"pe",
+        "country": "perou"
+    },
+    { 
+        "index": 11,
+        "name": "denmark",
+        "groupRank": 3,
+        "countryCode":"dk",
+        "country": "denmark"
+    },
+    { 
+        "index": 12,
+        "name": "australia",
+        "groupRank": 4,
+        "countryCode":"au",
+        "country": "australia"
+    },
+    { 
+        "index": 13,
+        "name": "argentina",
+        "groupRank": 1,
+        "countryCode":"ar",
+        "country": "argentina"
+    },
+    { 
+        "index": 14,
+        "name": "croatia",
+        "groupRank": 2,
+        "countryCode":"hr",
+        "country": "croatia"
+    },
+    { 
+        "index": 15,
+        "name": "nigeria",
+        "groupRank": 3,
+        "countryCode":"ng",
+        "country": "nigeria"
+    },
+    { 
+        "index": 16,
+        "name": "iceland",
+        "groupRank": 4,
+        "countryCode":"is",
+        "country": "iceland"
+    },
+    { 
+        "index": 17,
+        "name": "brazil",
+        "groupRank": 1,
+        "countryCode":"br",
+        "country": "brazil"
+    },
+    { 
+        "index": 18,
+        "name": "swizerland",
+        "groupRank": 2,
+        "countryCode":"ch",
+        "country": "swizerland"
+    },
+    { 
+        "index": 19,
+        "name": "costa rica",
+        "groupRank": 3,
+        "countryCode":"cr",
+        "country": "costa rica"
+    },
+    { 
+        "index": 20,
+        "name": "serbia",
+        "groupRank": 4,
+        "countryCode":"rs",
+        "country": "serbia"
+    },
+    { 
+        "index": 21,
+        "name": "germany",
+        "groupRank": 1,
+        "countryCode":"de",
+        "country": "germany"
+    },
+    { 
+        "index": 22,
+        "name": "mexico",
+        "groupRank": 2,
+        "countryCode":"mx",
+        "country": "mexico"
+    },
+    { 
+        "index": 23,
+        "name": "sweden",
+        "groupRank": 3,
+        "countryCode":"se",
+        "country": "sweden"
+    },
+    { 
+        "index": 24,
+        "name": "south korea",
+        "groupRank": 4,
+        "countryCode":"kr",
+        "country": "South Korea"
+    },
+    { 
+        "index": 25,
+        "name": "belgium",
+        "groupRank": 1,
+        "countryCode":"be",
+        "country": "belgium"
+    },
+    { 
+        "index": 26,
+        "name": "United kingdom",
+        "groupRank": 2,
+        "countryCode":"gb",
+        "country": "United kingdom"
+    },
+    { 
+        "index": 27,
+        "name": "panama",
+        "groupRank": 3,
+        "countryCode":"pa",
+        "country": "panama"
+    },
+    { 
+        "index": 28,
+        "name": "tunisia",
+        "groupRank": 4,
+        "countryCode":"tn",
+        "country": "tunisia"
+    },
+    { 
+        "index": 29,
+        "name": "poland",
+        "groupRank": 1,
+        "countryCode":"pl",
+        "country": "poland"
+    },
+    { 
+        "index": 30,
+        "name": "colombia",
+        "groupRank": 2,
+        "countryCode":"co",
+        "country": "colombia"
+    },
+    { 
+        "index": 31,
+        "name": "Japan",
+        "groupRank": 3,
+        "countryCode":"jp",
+        "country": "Japan"
+    },
+    { 
+        "index": 32,
+        "name": "senegal",
+        "groupRank": 4,
+        "countryCode":"sn",
+        "country": "senegal"
+    }
+]
