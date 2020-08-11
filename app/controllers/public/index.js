@@ -13,15 +13,14 @@ module.exports = function () {
 
   router.post('/signup', function (req, res) {
     console.log('signing up')
-    if (!req.body.name || !req.body.password) {
-      res.json({ success: false, message: 'Please enter username and password.' })
+    if (!req.body.login || !req.body.password) {
+      res.json({ success: false, message: 'Please enter login and password.' })
     } else {
       UserService.save({
         local:
           {
-            name: req.body.name,
             password: req.body.password,
-            email: req.body.email
+            login: req.body.login
           },
         lang: req.body.lang
       }, function (err, data) {
@@ -36,7 +35,7 @@ module.exports = function () {
   })
 
   router.post('/signin', function (req, res) {
-    UserService.findOne({ 'local.name': req.body.name }, function (err, user) {
+    UserService.findOne({ 'local.login': req.body.login }, function (err, user) {
       if (err) { throw err }
       if (!user) {
         res.status(401).send({ success: false, msg: 'Authentication failed. User not found.' })
@@ -44,13 +43,13 @@ module.exports = function () {
         user.comparePassword(req.body.password, function (err, isMatch) {
           if (isMatch && !err) {
             var token = jwt.sign(user.toObject(), config.secrets.jwt, { expiresIn: '1d' })
-            var tosend = user.toObject()
+            var tosend = user.toJSON()
             if (tosend.role === 'pre') {
               res.status(401).send({ success: false, msg: 'Your account has been created but not yet validated by an administrator.' })
             } else {
               tosend.jwt = 'JWT ' + token
               if (user.role === 'pre') { user.set({ role: 'user' }) }
-              user.signedIn.push(new Date())
+              tosend.signedIn = new Date();
               res.json(tosend)
             }
           } else {

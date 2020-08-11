@@ -5,7 +5,8 @@
 'use strict'
 
 // Set default node environment to development
-process.env.NODE_ENV = process.env.NODE_ENV || 'production'
+require('dotenv').config();
+process.env.NODE_ENV = process.env.NODE_ENV || 'development'
 console.log('Starting MODE : ' + process.env.NODE_ENV)
 
 var express = require('express')
@@ -36,7 +37,7 @@ if (config.mongo.username !== '' && config.mongo.password !== '') {
     password: config.mongo.password
   }
 }
-
+console.log("connecting to : %s", config.mongo.uri);
 mongoose.connect(config.mongo.uri, dbOptions)
 
 var db = mongoose.connection
@@ -59,7 +60,7 @@ User.findOne({ role: 'admin' }, function (err, data) {
       var user = new User()
       user.role = 'admin'
       user.local = {
-        name: 'Admin',
+        login: 'Admin',
         password: 'test'
       }
       user.save()

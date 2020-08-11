@@ -2,12 +2,9 @@ openapi: 3.0.0
 # Added by API Auto Mocking Plugin
 servers:
 # Added by API Auto Mocking Plugin
-  - description: SwaggerHub API Auto Mocking
-    url: https://virtserver.swaggerhub.com/jmchey/TestWorkFlow/1.0.0
-  - description: SwaggerHub API Auto Mocking
-    url: http://virtserver.swaggerhub.com/jmchey/TestWorkFlow/1.0.0
   - description: Local
-    url: localhost:8001
+    url: localhost:8001/api
+
 info:
   description: This is a simple API
   version: "1.0.0"
@@ -34,65 +31,92 @@ paths:
       requestBody:
         content:
           application/json:
-            schema:
+            schema: 
               type: object
-              properties:
-                name: 
-                  type: string
-                password: 
-                  type: string
-              example:
-                name: test
-                password: test
+              $ref: '#/components/schemas/user'
+
           
       
       responses:
         '200':
-          description: search results matching criteria
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/InventoryItem'
-        '400':
-          description: bad input parameter
+          $ref: '#component/responses/signupSuccess'
+        '500':
+          $ref: '#component/responses/signupError'
+
+  /signin:
+    post:
+      tags:
+        - signin
+      summary: signin
+      operationId: signin
+      description: |
+        Sign In
+      requestBody:
+        content:
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/user'
+
+      responses:
+        '200':
+          $ref: '#component/responses/signinSuccess'
+        '500':
+          $ref: '#component/responses/signinError'
+
+security:
+  - name: []
 
 components:
   schemas:
-    InventoryItem:
-      type: object
-      required:
-        - id
-        - name
-        - manufacturer
-        - releaseDate
-      properties:
-        id:
-          type: string
-          format: uuid
-          example: d290f1ee-6c54-4b01-90e6-d701748f0851
-        name:
-          type: string
-          example: Widget Adapter
-        releaseDate:
-          type: string
-          format: date-time
-          example: '2016-08-29T09:12:33.001Z'
-        manufacturer:
-          $ref: '#/components/schemas/Manufacturer'
-    Manufacturer:
-      required:
-        - name
-      properties:
-        name:
-          type: string
-          example: ACME Corporation
-        homePage:
-          type: string
-          format: url
-          example: 'https://www.acme-corp.com'
-        phone:
-          type: string
-          example: 408-867-5309
-      type: object
+      User:
+        type: object
+        properties:
+          id:
+            type: string        
+          email:
+            type: string
+            format: email
+          password: 
+            type: string
+            minLength: 8
+            format: password
+
+  responses:
+
+    signupSuccess:
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: string
+
+    signupError:
+      description: Error
+      content:
+        application/json:
+          schema:
+            type: string
+    signinSuccess:
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: string
+
+    signinError:
+      description: Error
+      content:
+        application/json:
+          schema:
+            type: string
+
+  
+  securitySchemes:
+    name:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+
+
+    

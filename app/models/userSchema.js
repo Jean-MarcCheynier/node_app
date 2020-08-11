@@ -4,17 +4,18 @@ bcrypt   = require('bcrypt-nodejs');
 var userSchema = mongoose.Schema({
 	
 	dateCreate: {type: Date, default: Date.now},
-	signedIn: [Date],
+	signedIn: {type: Date},
 	role: {
 		type: String,
 		enum: ['user', 'pre', 'admin'],
 		default: 'pre'
 	},
 	lang: {type: String, default: 'fr'},
-	local            : {
-		name         : { type : String, unique : true, required : true },
-		email        : { type : String, unique : false, required : false  },
-		password     : { type : String , required : true },
+	name: { type : String, unique : false, required : false },
+	email: { type : String, unique : true, required : false },
+	local: {
+		login: { type : String, unique : true, required : true  },
+		password: { type : String , required : true },
 	}
 });
 
@@ -42,8 +43,6 @@ userSchema.pre('save', function (next) {
 
 // Comparaison des mots de passes reçus et en base
 userSchema.methods.comparePassword = function(pw, cb) {
-	console.log(pw);
-	console.log(this.local.password);
 	bcrypt.compare(pw, this.local.password, function(err, isMatch) {
 		console.log("callback");	
 	  	if (err) {
@@ -55,8 +54,7 @@ userSchema.methods.comparePassword = function(pw, cb) {
 
 userSchema.methods.toJSON = function() {
 	var obj = this.toObject();
-	delete obj.local.password;
-	delete obj.local.email;
+	delete obj.local;
 	delete obj.facebook;
 	delete obj.twitter;
 	delete obj.google;

@@ -24,9 +24,6 @@ var all = {
   // Server IP
   ip: process.env.IP || '0.0.0.0',
 
-  // SAP CONFIG
-  SAP_CAI: {},
-
   // Should we populate the DB with sample data?
   seedDB: true,
 
