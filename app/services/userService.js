@@ -13,15 +13,6 @@ var UserService = {
 			callback(err, data);
 		});
 	},
-
-	findAllPublicData: function(callback){
-		User.find(function(err, data){
-			if(err){
-				return console.error(err);
-			}
-			callback(err, data);
-		});
-	},
 	
 	findById: function(id, callback){
 		User.findById(id, function(err, data){
@@ -59,8 +50,7 @@ var UserService = {
 
 	},
 	update: function(data, callback){
-
-		User.updateOne({"_id": data._id}, { $set: {'role': data.role }}, function(err, data){
+		User.updateOne({"_id": data._id}, { $set: {...data }}, function(err, data){
     		if(err) { 
     			throw err; 
     		}
@@ -83,6 +73,9 @@ var UserService = {
     		}
     		callback(err, data);
 		})
+	},
+	accept: function(id, callback){
+		User.findByIdAndUpdate(id, {role: 'user'}, callback);
 	}
 }
 

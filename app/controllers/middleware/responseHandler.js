@@ -11,5 +11,4 @@ var ResponseHandler = {
     handleJsonRes: handleJsonRes
 }
 
-
 module.exports = ResponseHandler;

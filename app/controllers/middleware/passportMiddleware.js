@@ -12,6 +12,21 @@ var passportMiddleware = {
 
 	},
 
+	allow: (...roles) => (req, res, next) => {
+		console.log("COUCOU");
+		console.log('roles');
+		if(roles.includes("me")){
+			if(req.params && req.params.userId && req.params.userId === req.user._id){
+				return next();
+			}
+		}else if(roles.includes(req.user.role)){
+			return next();
+		}else{
+			res.send(401, 'unauthorized');
+		}
+	},
+
+
 	isAdmin : function(req, res, next) {
 		userService.findById(req.user._id, (user) => {
 			if(user.isAdmin){

@@ -2,36 +2,48 @@
 
 const CLASS = "UserController : "
 
-var express = require('express'),
-UserService = require('../../services/userService'),
-router = express.Router();
+const express = require('express');
+const {allow} = require('../middleware/passportMiddleware');
+const UserService = require('../../services/userService');
+const router = express.Router();
 
 module.exports = function(){
 	
-	//Get all users
 	router.route('/')
 	.get(function (req, res) {
 		UserService.findAll(
-			function(err, data){res.json(data)}
+			function(err, data){
+				res.json(data)
+			}
 		);
 	});
 	
-	//Get, Put (modify), Delete a user
-	router.route('/:id')
-	.get(function (req, res) {
-		UserService.findById(req.params.id,
+	router.route('/:userId')
+	.get(allow('me', 'admin'), function (req, res) {
+		UserService.findById(req.params.userId,
 			function(err, data){
 				res.json(data)
 			}
 		);
 	})
-	.put(function(req, res) {
+	.put(allow('me', 'admin'), function(req, res) {
 		UserService.update(req.body,
-			function(err, data){res.json(data)}
+			function(err, data){
+				res.json(data)
+			}
 		);
 	})
-	.delete(function(req, res) {
+	.delete(allow('me', 'admin'), function(req, res) {
 		UserService.deleteById(req.params.id,
+			function(err, data){
+				res.json(data)
+			}
+		);
+	});
+
+	router.route('/:userId/accept')
+	.post(allow('admin'), function(req, res) {
+		UserService.accept(req.body,
 			function(err, data){res.json(data)}
 		);
 	});
