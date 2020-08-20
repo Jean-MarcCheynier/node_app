@@ -11,7 +11,6 @@ module.exports = function(passport) {
     opts.jwtFromRequest = ExtractJwt.fromAuthHeaderWithScheme("jwt");
     opts.secretOrKey = config.secrets.jwt;
     passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
-        console.log("enter here");
         UserService.findById(jwt_payload._id, function(err, user) {
             if (user) {
                 done(null, user);

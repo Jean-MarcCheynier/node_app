@@ -43,16 +43,14 @@ module.exports = function(){
 
 	router.route('/:userId/accept')
 	.post(allow('admin'), function(req, res) {
-		UserService.accept(req.body,
-			function(err, data){res.json(data)}
-		);
+		UserService.accept(req.body, (err, data) => res.json(data));
 	});
 
 	router.route('/password/reset')	
 	.post(function(req, res){
 		if(req.user._id != req.body._id)
 			res.send(401, 'unauthorized');
-		UserService.update(req.body, (err, data)=>{
+		UserService.update(req.body, (err, data) => {
 			res.json(data);
 		})
 	});
