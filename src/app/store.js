@@ -9,11 +9,13 @@ import { reduxBatch } from '@manaflair/redux-batch'
 import signinReducer from '../features/signin/signinSlice';
 import signupReducer from '../features/signup/signupSlice';
 import usersReducer from '../features/admin/users/userSlice';
+import imageReducer from '../features/uploadPicture/imageSlice';
 
 const reducer = {
   signin: signinReducer,
   signup: signupReducer,
   users: usersReducer,
+  image: imageReducer,
 }
 
 const middleware = [...getDefaultMiddleware(), logger]

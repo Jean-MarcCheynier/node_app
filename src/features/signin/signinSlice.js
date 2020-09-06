@@ -46,7 +46,6 @@ export const onUserSignedIn = (user) => dispatch => {
 }
 
 export const signout = () => dispatch => {
-  console.log("coucou")
   sessionStorage.removeItem("user");
   dispatch(reset());
 }
