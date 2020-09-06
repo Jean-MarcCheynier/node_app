@@ -2,21 +2,26 @@ var mongoose = require("mongoose"),
 bcrypt   = require('bcrypt-nodejs');
 // define the schema for our user model
 var userSchema = mongoose.Schema({
-	dateCreate: {type: Date, default: Date.now},
-	signedIn: {type: Date},
-	role: {
-		type: String,
-		enum: ['user', 'pre', 'admin'],
-		default: 'pre'
+		signedIn: {type: Date},
+		role: {
+			type: String,
+			enum: ['user', 'pre', 'admin'],
+			default: 'pre'
+		},
+		lang: {type: String, default: 'fr'},
+		name: { type: String, unique: false, required: false },
+		email: { type: String, unique: false, required: false },
+		local: {
+			login: { type: String, unique: true, required : true  },
+			password: { type: String , required: true },
+		}
 	},
-	lang: {type: String, default: 'fr'},
-	name: { type: String, unique: false, required: false },
-	email: { type: String, unique: false, required: false },
-	local: {
-		login: { type: String, unique: true, required : true  },
-		password: { type: String , required: true },
-	}
-});
+	{ 
+		timestamps: { 
+			createdAt: 'created_at',
+			updatedAt: 'updated_at' 
+		} 
+	});
 
 // Enregistrement de l'utilisateur (toujours hasher les mots de passe en production) 
 userSchema.pre('save', function (next) {  
@@ -53,7 +58,7 @@ userSchema.methods.comparePassword = function(pw, cb) {
 
 userSchema.methods.toJSON = function() {
 	var obj = this.toObject();
-	delete obj.local;
+	delete obj.local.password;
 	delete obj.facebook;
 	delete obj.twitter;
 	delete obj.google;

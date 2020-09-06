@@ -1,41 +1,21 @@
 var userService = require("../../services/userService");
+const { errors, roles } = require("../../utils")
 
 var passportMiddleware = {
-	isLoggedIn: function(req, res, next) {
-		if (req.isAuthenticated()) 
-			return next();
 
-		res.json({authenticated: false})
-	},
-
-	isAuthenticated : function(){
-
-	},
-
-	allow: (...roles) => (req, res, next) => {
-		if(roles.includes("me")){
+	allow: (..._roles) => (req, res, next) => {
+		console.debug("allowing access");
+		if(_roles.includes("me")){
 			if(req.params && req.params.userId && req.params.userId === req.user._id){
 				return next();
 			}
-		}else if(roles.includes(req.user.role)){
+		}
+		if(_roles.includes(req.user.role)){
 			return next();
 		}else{
-			res.send(401, 'unauthorized');
+			res.status(401).send(errors[401]);
 		}
 	},
-
-
-	isAdmin : function(req, res, next) {
-		userService.findById(req.user._id, (user) => {
-			if(user.isAdmin){
-				next()
-			}else{
-				res.json({admin: false})
-			}
-		})
-
-	}
 }
-
 
 module.exports = passportMiddleware;

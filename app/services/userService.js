@@ -33,29 +33,33 @@ var UserService = {
 	},
 	save: function(data, callback){
 		var user = new User(data);
+		console.info(user);
 		user.save(function(err, data){
 			if(err){
 				console.log(CLASS.concat("save err :'").concat(err.code).concat("'"));
-				switch(err.code){
-					case 11000 : err.publicmsg = 'user already exists'
-					break;
-					default : err.publicmsg = 'unable to create user';
-				}
 			}else{
 				console.log(CLASS.concat("save succes"));
 			}
-
 			callback(err, data);
 		})
 
 	},
 	update: function(data, callback){
-		User.updateOne({"_id": data._id}, { $set: {...data }}, function(err, data){
-    		if(err) { 
-    			throw err; 
-    		}
-			callback(err, data);
-		});
+		delete data.local;
+		User.findByIdAndUpdate(data._id,
+			data, 
+			{ 
+				new: true,
+				strict: true,
+				overwrite: false,
+			} , 
+			(err, updatedData) => {
+				if(err) { 
+					throw err; 
+				}
+				callback(err, updatedData);
+			}
+		);
 	},
 	deleteAll: function(callback){
 		User.remove({}, function(err, data){
@@ -75,6 +79,7 @@ var UserService = {
 		})
 	},
 	accept: function(id, callback){
+		console.log(id);
 		User.findByIdAndUpdate(id, {role: 'user'}, callback);
 	}
 }

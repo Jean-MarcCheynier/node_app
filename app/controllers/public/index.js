@@ -17,15 +17,24 @@ module.exports = function () {
       res.json({ success: false, message: 'Please enter login and password.' })
     } else {
       UserService.save({
-        local:
-          {
+        local: {
             password: req.body.password,
             login: req.body.login
           },
         lang: req.body.lang
       }, function (err, data) {
         if (err) {
-          return res.json({ success: false, errmsg: err.publicmsg })
+          let httpCode;
+          let errorMessage;
+          switch(err.code){
+            case 11000: errorMessage = 'user already exists';
+              httpCode= 409;
+              break;
+            default: errorMessage = 'unable to create user';
+              httpCode= 500;
+
+          }
+          return res.status(httpCode).send({ success: false, errmsg: errorMessage })
         }
         if (data.local.email) { }
 

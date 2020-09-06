@@ -19,7 +19,8 @@ module.exports = function(){
 	});
 	
 	router.route('/:userId')
-	.get(allow('me', 'admin'), function (req, res) {
+	.get(allow('admin'), function (req, res) {
+		console.log("then");
 		UserService.findById(req.params.userId,
 			function(err, data){
 				res.json(data)
@@ -34,7 +35,7 @@ module.exports = function(){
 		);
 	})
 	.delete(allow('me', 'admin'), function(req, res) {
-		UserService.deleteById(req.params.id,
+		UserService.deleteById(req.params.userId,
 			function(err, data){
 				res.json(data)
 			}
@@ -43,7 +44,8 @@ module.exports = function(){
 
 	router.route('/:userId/accept')
 	.post(allow('admin'), function(req, res) {
-		UserService.accept(req.body, (err, data) => res.json(data));
+		console.log(req.params.userId)
+		UserService.accept(req.params.userId, (err, data) => res.json(data));
 	});
 
 	router.route('/password/reset')	
