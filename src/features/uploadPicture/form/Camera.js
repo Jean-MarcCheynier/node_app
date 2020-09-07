@@ -2,9 +2,11 @@ import React, {useState, useEffect, useRef} from 'react';
 import Button from 'react-bootstrap/Button';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCamera, faCheck, faTimes, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faCamera, faCheck, faTimes, faSpinner, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 
-export default function Camera({onChange, onError}) {
+import "./Camera.scss";
+
+export default function Camera({onChange, onError, success, pending}) {
 
 
     const sUsrAg = navigator.userAgent;
@@ -12,6 +14,7 @@ export default function Camera({onChange, onError}) {
     const canvasRef = useRef(null);
 
     const [userMedia, setUserMedia] = useState(false);
+    const [mediaStream, setMediaStream] = useState(false);   
     const [upload, setUpload] = useState(false);
     const [capture, setCapture] = useState("");
     const [blob, setBlob] = useState("");
@@ -21,9 +24,10 @@ export default function Camera({onChange, onError}) {
 
     useEffect(() => {   
         if(!!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)){
-            setUserMedia(true);
-            navigator.mediaDevices.getUserMedia({video: true})
+            //setUserMedia(true);
+            navigator.mediaDevices.getUserMedia(constraints)
             .then(_mediaStream => {
+                setMediaStream(_mediaStream)
                 videoRef.current.srcObject = _mediaStream;
                 setPendingCamera(false);
             })
@@ -34,7 +38,14 @@ export default function Camera({onChange, onError}) {
         }else{
             setError(true);
         }
-
+        return function cleanup() {
+            const stream = videoRef.current.srcObject;
+            const tracks = stream.getTracks();
+            tracks.forEach(function(track) {
+                track.stop();
+            });   
+            videoRef.current.srcObject =  null;     
+        };
     }, []);
 
     useEffect(() => {
@@ -42,6 +53,13 @@ export default function Camera({onChange, onError}) {
             onError(error);
         }
     }, [error, onError])
+
+    //Reset form after upload success
+    useEffect(() => {
+        if(success){
+            cancel();
+        }
+    }, [success])
 
     const captureScreen = () => {
         let _video = videoRef.current;
@@ -58,7 +76,6 @@ export default function Camera({onChange, onError}) {
         let _video = videoRef.current;
         _video.play();
         setCapture("");
-
     }
 
     const validate = () => {
@@ -74,12 +91,16 @@ return (<div className="container mt-4">
     : <>
     <div className="card bg-dark text-white">
         <video className="card-img" id="test" ref={videoRef}  autoPlay alt=""/>
-        <div className={`card-img-overlay ${pendingCamera? 'd-flex':'d-none' }`}>
-            <div className="m-auto text-center">
-                <FontAwesomeIcon icon={faSpinner} spin size="4x"/>
-            </div>
+        <div className="card-img-overlay d-flex">
+            { pending &&
+            <div className="m-auto text-white text-center">
+                <FontAwesomeIcon icon={faSpinner} spin size="6x"/>
+            </div>}
+            { success && <div className={`m-auto text-white text-center demo-fade-out`}>
+                <FontAwesomeIcon icon={faCheckCircle} size="6x"/>
+            </div>}
         </div>
-        <div className={`card-img-overlay ${pendingCamera && 'd-none'}`}>
+        <div className={`card-img-overlay ${(pendingCamera || pending) && 'd-none'}`}>
             <h5 className="card-title text-center">Send a picture of your document</h5>
             <div className="position-absolute w-100 text-center" 
                 style={{ bottom: '10px', left: '0px'}}>

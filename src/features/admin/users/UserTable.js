@@ -8,7 +8,7 @@ import {MUITheme} from '../../../app/utils/MUITheme';
 
 export default function UserTable({onRowUpdate, onRowDelete, ...rest}) {
   
-    const [columns, setColumns] = useState([
+    const [columns] = useState([
       { title: 'Username', field: 'local.login', editable: 'never' },
       { title: 'Created at', field: 'dateCreate', render: rowData => moment(rowData.dateCreate).format("DD/MM/yy, hh:mm:ss"), editable: 'never' },
       { title: 'Role', field: 'role', lookup: { admin: 'Admin', user: 'User', pre: 'Pre' }, editable: 'always'},

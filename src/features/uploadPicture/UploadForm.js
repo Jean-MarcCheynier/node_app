@@ -1,59 +1,47 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
+import { map } from 'lodash';
 
-import {uploadImage, downloadImage} from './imageSlice';
+import Form from 'react-bootstrap/Form';
+
+import {uploadImage, reset} from './imageSlice';
 
 import Camera from './form/Camera';
-import FileUpload from './form/FileUpload'
-
-
-
+import FileUpload from './form/FileUpload';
+import ImageCarousel from './ImageCarousel';
 
 export default function UploadForm() {
 
     const [cameraMode, setCameraMode] = useState(false);
-    const [src, setSrc] = useState("");
-    const {srcMap} = useSelector(state => state.image)
+    const {srcMap, uploadSuccess, uploadPending} = useSelector(state => state.image)
     const dispatch = useDispatch()
 
-    const handlePictureChange = image => {
-        const formData = new FormData();
-        formData.append("imageUpload", image);
-        dispatch(uploadImage(formData))
+
+    const handleFileChange = imageFile => {
+        dispatch(uploadImage(imageFile));
     }
 
-    const handleFileChange = image => {
-        const formData = new FormData();
-        formData.append("imageUpload", image);
-        dispatch(uploadImage(formData))
+    const handleCameraSwitch = e => {
+        dispatch(reset());
+        setCameraMode(!cameraMode);
     }
-
-    const handleOnClick = imageId => {
-        dispatch(downloadImage("5f53dd1779ac8a52fcec8562"))
-    }
-
-    useEffect(() => {
-        dispatch(downloadImage("5f53dd1779ac8a52fcec8562"))
-    }, [])
 
     return (<>
-    <Form className="m-auto" style={{maxWidth: "720px"}}>
-        <Form.Check 
-            type="switch"
-            id="custom-switch"
-            value={cameraMode}
-            onChange={e => setCameraMode(!cameraMode)}
-            label={<label className={`${cameraMode && 'text-primary'}`}>{`Camera mode ${cameraMode?'on':'off'}`}</label>}
-        />
-        {cameraMode?
-        <Camera onChange={handlePictureChange}/>
-        :
-        <FileUpload onChange={handleFileChange}/>}
-    </Form>
-    <img className="img-fluid" src={srcMap["5f53dd1779ac8a52fcec8562"]} alt="other"/>
-    <Button onClick={handleOnClick}>Test</Button>
+        <Form className="mx-auto mb-3" style={{maxWidth: "720px"}}>
+            <Form.Check 
+                className="text-center"
+                type="switch"
+                id="custom-switch"
+                value={cameraMode}
+                onChange={handleCameraSwitch}
+                label={<label className={`${cameraMode && 'text-primary'}`}>{`Camera mode ${cameraMode?'on':'off'}`}</label>}
+            />
+            {cameraMode?
+            <Camera success={uploadSuccess} pending={uploadPending} onChange={handleFileChange}/>
+            :
+            <FileUpload success={uploadSuccess} pending={uploadPending}  onChange={handleFileChange}/>}
+        </Form>
+        <ImageCarousel imageArray={map(srcMap, image => image).reverse()}/>
     </>
     )
 }

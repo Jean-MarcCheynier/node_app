@@ -2,9 +2,13 @@ import { createSlice } from '@reduxjs/toolkit';
 import * as authAPI from '../../app/api/image';
 
 const initialState = {
-    pending: false, 
-    success: false, 
-    error: false,
+    uploadPending: false,
+    downloadPending: false, 
+    uploadSuccess: false,
+    downloadSuccess: false, 
+    uploadError: false, 
+    downloadError: false,
+    uploaded: {},
     srcMap: {}
   }
 
@@ -12,22 +16,24 @@ export const imageSlice = createSlice({
   name: 'image',
   initialState,
   reducers: {
-    downloadPending: (state) =>  ({ ...state, pending: true, success: false, error: false}),
+    downloadPending: (state) =>  ({ ...state, downloadPending: true, downloadSuccess: false, downloadError: false}),
     downloadSuccess: (state, action) =>  { 
-      state.pending= false;
-      state.success= true;
-      state.error= false;
-      state.srcMap[action.payload.id]= action.payload.src
+      state.downloadPending= false;
+      state.downloadSuccess= true;
+      state.downloadError= false;
+      state.srcMap[action.payload.id]= {...state.srcMap[action.payload.id], src: action.payload.src}
     },
-    downloadError: (state, action) =>  ({ ...state, pending: false, success: false, error: action.payload}),
-    uploadPending: (state) =>  ({ ...state, pending: true, success: false, error: false}),
-    uploadSuccess: (state, action) =>  ({ 
-        ...state,
-        pending: false, 
-        success: action.payload._id,
-        error: false}),
-    uploadError: (state, action) => ({ ...state, pending: false, success: false, error: action.payload}),
-    reset: () => ({...initialState})
+    downloadError: (state, action) =>  ({ ...state, downloadPending: false, downloadSuccess: false, downloadError: action.payload}),
+    uploadPending: (state) =>  ({ ...state, uploadPending: true, uploadSuccess: false, uploadError: false}),
+    uploadSuccess: (state, action) => { 
+        state.uploadPending= false; 
+        state.uploadSuccess= true;
+        state.uploaded= action.payload;
+        state.uploadError= false;
+        state.srcMap[action.payload.img]= action.payload;
+      },
+    uploadError: (state, action) => ({ ...state, uploadPending: false, uploadSuccess: false, uploadError: action.payload}),
+    reset: (state) => ({...initialState, srcMap: state.srcMap})
   },
 });
 
@@ -40,11 +46,24 @@ export const { uploadPending,
   downloadError,
   reset } = imageSlice.actions;
 
-export const uploadImage = (image) => dispatch => {
+export const uploadImage = (imageFile) => dispatch => {
     dispatch(uploadPending());
-    authAPI.uploadImage(image)
+    const formData = new FormData();
+    formData.append("imageUpload", imageFile);
+    return authAPI.uploadImage(formData)
     .then( res => {
-      dispatch(uploadSuccess(res.data))
+      const reader = new FileReader();
+      try{
+        reader.addEventListener("load", function () {
+          let src = reader.result;
+          dispatch(uploadSuccess({...res.data, src }));
+        }, false);
+        reader.readAsDataURL(imageFile);
+      }catch(e){
+        console.error(e);
+        let responseError = { FE_CODE: "ERR_UPLOAD_FILE_READER" };
+        dispatch(uploadError(responseError));
+      }  
     })
     .catch( error => {
       let responseError = { FE_CODE: "ERR_UPLOAD" };

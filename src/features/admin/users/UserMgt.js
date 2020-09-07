@@ -16,7 +16,7 @@ export default function UserMgt() {
 
   useEffect( () => {
     dispatch(fetchUsers());
-  }, []);
+  }, [dispatch]);
 
   const handleRowUpdate = (newValue) => (dispatch(updateUser(newValue)));
   const handleRowDelete = (userId) => (dispatch(deleteUser(userId)));
