@@ -6,6 +6,7 @@ var ImageRefSchema =  mongoose.Schema({
             default: 'other',
             enum: ['idCard', 'inSuranceCard', 'crash', 'drivngLicense', 'other']
         },
+        classification: {type: mongoose.Schema.Types.Mixed },
         owner: mongoose.Schema.Types.ObjectId,
         img: mongoose.Schema.Types.ObjectId,      
         mimeType: { 

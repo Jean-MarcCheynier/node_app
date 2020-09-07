@@ -5,6 +5,7 @@ const fetch = require('node-fetch');
 const FormData = require('form-data');
 const fs = require("fs");
 const request = require('request');
+const axios = require('axios');
 
 var url = require('url');
 var https = require('https');
@@ -13,47 +14,14 @@ var HttpsProxyAgent = require('https-proxy-agent');
 
 const CLASS = "imageService : ";
 
-const classify = (imageRef, callback) => {
-	const URL = "https://cardamageapi.westeurope.azurecontainer.io:5000/classify";
-	const data = new FormData();
-	data.append('name', imageRef.path);
-	data.append('file', fs.createReadStream(imageRef.path));
-	console.log("File created");
-	console.log(data);
+const classify = imageRef => {
+	const URL = "http://cardamageapi.westeurope.azurecontainer.io:5000/classify";
+	const form = new FormData();
+	form.append('name', ' image');
+	const file = fs.createReadStream(imageRef.path);
+	form.append('file', file);
 
-	request.post({url:URL, data}, function optionalCallback(err, httpResponse, body) {
-		if (err) {
-			return console.error('upload failed:', err);
-		}
-		console.log('Upload successful!  Server responded with:', body);
-		});
-
-
-
-/* 	// HTTP/HTTPS proxy to connect to
-	var proxy = process.env.http_proxy || 'http://168.63.76.32:3128';
-	console.log('using proxy server %j', proxy);
-	try{
-		fetch('https://cardamageapi.westeurope.azurecontainer.io:5000/classify', { 
-			method: 'POST', 
-			body: data,
-			headers: {'Content-Type': 'multipart/form-data'}
-		})
-		.then(classifyResponse => {
-			if(classifyResponse.ok){
-				imageRef.classification = classifyResponse.data;
-			}else{
-				throw MyCustomError(res.statusText);
-			}
-		}) // expecting a json response
-		.then(json => console.log(json));	 */
-
-		
-/* 	} catch (err) {
-		console.log("CLASSIFY_ERROR");
-		console.log(err);
-	} */
-	callback(null, imageRef);
+	return axios.post(URL, form, { headers: {...form.getHeaders()}  });
 }
 
 
@@ -87,7 +55,8 @@ const saveImgRef = function(user, imageRef, callback){
 		img: imageRef._id,  
 		mimetype: imageRef.mimetype,
 		type: imageRef.type,
-		name: imageRef.name
+		name: imageRef.name,
+		classification: imageRef.classification
 	},
 	(err, newIMageRef) => {
 		if(err){
@@ -99,17 +68,31 @@ const saveImgRef = function(user, imageRef, callback){
 };
 
 const save = function(user, imageRef, callback){
-	classify(imageRef, (classificationError, withClassification) => {
-		saveImgFile(withClassification, (err, newImage) => {
-			if(err){
+	classify(imageRef).then(classifyResponse => {
+		console.log("Classify success");
+		imageRef.classification = classifyResponse.data.classification;
+		console.log(imageRef);
+		saveImgFile(imageRef, (imgSaveErr, newImage) => {
+			if(imgSaveErr){
+				console.log("Error could not save image");
 				return callback(err);
 			}else{
-	
-				withClassification._id = newImage._id
-				saveImgRef(user, withClassification, callback);
+				console.log("Img saved successfuly");
+				imageRef._id = newImage._id
+				saveImgRef(user, imageRef, (refSaveErr, ref) => {
+					if(refSaveErr){
+						console.log("Error could not save Ref");
+						return callback(err);
+					}else{
+						console.log("Ref saved successfuly");
+						callback(null, ref);
+					}
+				});
 			}
 		})
-
+	}).catch(classificationError => {
+		console.log("classification Error");
+		return callback(classificationError);
 	})
 }
 
