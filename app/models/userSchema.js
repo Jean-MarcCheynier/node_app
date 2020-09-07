@@ -5,7 +5,7 @@ var userSchema = mongoose.Schema({
 		signedIn: {type: Date},
 		role: {
 			type: String,
-			enum: ['user', 'pre', 'admin'],
+			enum: ['user', 'insurer', 'pre', 'admin'],
 			default: 'pre'
 		},
 		lang: {type: String, default: 'fr'},

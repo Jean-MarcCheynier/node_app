@@ -5,33 +5,48 @@ var router = express.Router();
 const multer  = require('multer');
 var upload = multer({ dest: 'public/tmp' });
 const ImageService = require('../../services/ImageService');
+const {allow} = require('../middleware/passportMiddleware');
 
 
 module.exports = function(){
     router.route('/')
     .post(upload.single('imageUpload'), function (req, res) {
-        console.log(req.headers);
         if(req.file){
-            ImageService.saveImgFlie(req.file,
+            ImageService.save(req.user, req.file,
                 function(err, data){
-                    res.json(data)
+                    if(err){
+                        res.status(500).json({errmsg: "ERR"});
+                    }else{
+                        res.json(data)
+                    }
                 }
             );
         }
-        if(req.data){
-            ImageService.saveImgData(req.data,
-                function(err, data){
-                    res.json(data)
+    })
+    .get(allow('me', 'admin', 'insurer'), (req, res) => {
+        switch(req.user.role){
+            case "user": ImageService.findByOwnerId(req.user._id, (err, data) => {
+                if(err){
+                    
+                }else{
+                    res.json(data);
                 }
-            );
+            });
+            break;
+            case "insurer": ImageService.findAll((err, data) => {
+                if(err){
+                    res.json(data);
+                }else{
+                    
+                }
+            });
+            break;
+            default: return res.status(401).json({errmsg: "ERR"})
         }
-
-    });
+    })
 
     router.route('/:imageId')
     .get(function (req, res){
-        console.log("COUCOU");
-        console.log(req.params.imageId);
         ImageService.findById(req.params.imageId,
 			function(err, image){
                 if(err){

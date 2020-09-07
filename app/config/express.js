@@ -23,11 +23,12 @@ var session = require('express-session');
 
 module.exports = function(app) {
   var env = app.get('env');
-
+  app.set('trust proxy', true) // specify a single subnet
   app.set('views', config.root + '/app/views');
   app.set('view engine', 'pug');
   app.set('view options', { layout: false });
   app.set('superSecret', config.secrets.superSecret);
+  app.set()
   app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
