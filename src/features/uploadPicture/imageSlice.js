@@ -49,7 +49,7 @@ export const { uploadPending,
 export const uploadImage = (imageFile) => dispatch => {
     dispatch(uploadPending());
     const formData = new FormData();
-    formData.append("imageUpload", imageFile);
+    formData.append("file", imageFile);
     return authAPI.uploadImage(formData)
     .then( res => {
       const reader = new FileReader();

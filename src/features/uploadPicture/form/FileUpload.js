@@ -45,9 +45,9 @@ export default function FileUpload({ onChange, success, pending }) {
     return (<Form.Group>
         <Card id="card-preview" className={`text-primary mb-2`}>
             <Card.Img src={previewUrl} alt="Card image" as={() =>
-                <picture className="text-center" style={{ height: '40vh' }}>
-                    <source className="img-fluid" srcSet={previewUrl}/>
-                    <Image style={{maxHeight: '40vh', opacity: '0.5'}} fluid={true} thumbnail={true} src="..." alt="" />
+                <picture className="d-flex text-center" style={{ height: '350px' }}>
+                    <source srcSet={previewUrl}/>
+                    <Image className="m-auto" style={{maxHeight: '350px', opacity: '0.5'}} fluid={true} thumbnail={true} src="..." alt="" />
                 </picture>
             } />
             <Card.ImgOverlay className="d-flex text-primary text-center" style={{zIndex: '1'}}>
@@ -64,7 +64,7 @@ export default function FileUpload({ onChange, success, pending }) {
             <Card.ImgOverlay className={`${!previewUrl && 'bg-light'}`}>
                 <Card.Title className="text-center font-weight-bold">{previewUrl?'Image Preview':'Export an Image'}</Card.Title>
                 <Card.Text className={`text-center ${previewUrl && 'd-none'}`}>
-                    <FontAwesomeIcon icon={faImage} size="5x"/>
+                    <FontAwesomeIcon icon={faImage} size="10x"/>
                 </Card.Text>
             </Card.ImgOverlay>
             <Card.Footer style={{zIndex: '2'}}><small>Disclaimer : Blablabla... Images can be stored up to N days</small></Card.Footer>

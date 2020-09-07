@@ -39,12 +39,16 @@ export default function Camera({onChange, onError, success, pending}) {
             setError(true);
         }
         return function cleanup() {
-            const stream = videoRef.current.srcObject;
-            const tracks = stream.getTracks();
-            tracks.forEach(function(track) {
-                track.stop();
-            });   
-            videoRef.current.srcObject =  null;     
+            try{
+                const stream = videoRef.current.srcObject;
+                const tracks = stream.getTracks();
+                tracks.forEach(function(track) {
+                    track.stop();
+                });
+                videoRef.current.srcObject =  null; 
+            }catch(e) {
+                console.error("Failed to cleanup camera form");
+            }  
         };
     }, []);
 
