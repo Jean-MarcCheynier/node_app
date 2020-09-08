@@ -71,13 +71,13 @@ const save = function(user, imageRef, callback){
 	classify(imageRef).then(classifyResponse => {
 		console.log("Classify success");
 		imageRef.classification = classifyResponse.data.classification;
-		console.log(imageRef);
+		imageRef.RID = classifyResponse.data.RID
 		saveImgFile(imageRef, (imgSaveErr, newImage) => {
 			if(imgSaveErr){
 				console.log("Error could not save image");
 				return callback(err);
 			}else{
-				console.log("Img saved successfuly");
+				console.log(classifyResponse.data.message);
 				imageRef._id = newImage._id
 				saveImgRef(user, imageRef, (refSaveErr, ref) => {
 					if(refSaveErr){

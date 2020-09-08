@@ -15,7 +15,6 @@ var storage = multer.diskStorage({
         cb(null, 'public/tmp')
     },
     filename: function (req, file, cb) {
-    console.log(file);
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
         cb(null, file.fieldname + '-' + uniqueSuffix+".png")
     }
@@ -28,11 +27,16 @@ var upload = multer({ storage: storage })
 module.exports = function(){
     router.route('/')
     .post(upload.single('file'), function (req, res) {
+        let documentType;
+        if(req.body){
+            documentType = req.body.documentType
+            console.log("DOCUMENT TYPE");
+            console.log(documentType);
+        }
         if(req.file){
+            req.file.documentType = documentType;
             ImageService.save(req.user, req.file,
                 function(err, data){
-                    console.log("Returning");
-                    console.log(data);
                     if(err){
                         res.status(500).json({errmsg: "ERR"});
                     }else{

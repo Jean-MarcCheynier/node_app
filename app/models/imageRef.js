@@ -1,11 +1,12 @@
 var mongoose = require('mongoose');
 var ImageRefSchema =  mongoose.Schema({
         name: {type: String},
-        type: {
+        documentType: {
             type: String, 
             default: 'other',
             enum: ['idCard', 'inSuranceCard', 'crash', 'drivngLicense', 'other']
         },
+        RID: {type: String},
         classification: {type: mongoose.Schema.Types.Mixed },
         owner: mongoose.Schema.Types.ObjectId,
         img: mongoose.Schema.Types.ObjectId,      
