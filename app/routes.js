@@ -18,6 +18,7 @@ module.exports = function(app, passport) {
 
 	// Insert routes below
 	app.use('/api/user', require('./controllers/private/userController')());
+	app.use('/api/image', require('./controllers/private/imageController')());
 
 	// Default routes
 	app.use('/', require('./controllers/public/index')());

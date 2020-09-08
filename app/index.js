@@ -27,7 +27,9 @@ mongoose.Promise = promise
 
 var dbOptions = {
   useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
+  useCreateIndex: true,
+  useFindAndModify: false
 }
 
 // If auth specified, add auth config to the dbOptions object
@@ -54,7 +56,7 @@ require('./routes')(app, passport)
 // Seed Admin User
 User.findOne({ role: 'admin' }, function (err, data) {
   if (err) {
-
+    console.error('An error occured while creating user')
   } else {
     if (!data) {
       var user = new User()
