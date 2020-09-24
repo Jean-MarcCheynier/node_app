@@ -46,11 +46,11 @@ export const { uploadPending,
   downloadError,
   reset } = imageSlice.actions;
 
-export const uploadImage = (imageFile) => dispatch => {
+export const uploadImage = (imageFile, documentType="other") => dispatch => {
     dispatch(uploadPending());
     const formData = new FormData();
     formData.append("file", imageFile);
-    formData.append("documentType", "crash");
+    formData.append("documentType", documentType);
     return authAPI.uploadImage(formData)
     .then( res => {
       const reader = new FileReader();

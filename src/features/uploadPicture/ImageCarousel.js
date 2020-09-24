@@ -25,9 +25,9 @@ export default function ImageCarousel({imageArray}) {
                             { image.classification ?
                             <Card.Footer style={{ zIndex: "2"}}>
                                 <ul className="list-unstyled">
-                                    <li><label>Damages detected:</label>{` ${image.classification[0]?"Yes":"No"}`}</li>
-                                    <li><label>Position:</label>{` ${image.classification[1]}`}</li>
-                                    <li><label>Criticity:</label>{` ${image.classification[2]}`}</li>
+                                    <li><label>Damages detected:</label>{` ${image.classification.isDamaged?"Yes":"No"}`}</li>
+                                    <li><label>Position:</label>{` ${image.classification.location?image.classification.location:'-'}`}</li>
+                                    <li><label>Criticity:</label>{` ${image.classification.severity?image.classification.severity:'-'}`}</li>
                                 </ul>
                             </Card.Footer>
                             :

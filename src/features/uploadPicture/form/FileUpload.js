@@ -62,7 +62,7 @@ export default function FileUpload({ onChange, success, pending }) {
                 </>
             </Card.ImgOverlay>
             <Card.ImgOverlay className={`${!previewUrl && 'bg-light'}`}>
-                <Card.Title className="text-center font-weight-bold">{previewUrl?'Image Preview':'Export an Image'}</Card.Title>
+                <Card.Title className="text-center font-weight-bold">{previewUrl?'Image Preview':'Upload Image'}</Card.Title>
                 <Card.Text className={`text-center ${previewUrl && 'd-none'}`}>
                     <FontAwesomeIcon icon={faImage} size="10x"/>
                 </Card.Text>
