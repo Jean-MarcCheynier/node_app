@@ -10,7 +10,7 @@ import Camera from './form/Camera';
 import FileUpload from './form/FileUpload';
 import ImageCarousel from './ImageCarousel';
 
-export default function UploadForm() {
+export default function UploadForm({documentType}) {
 
     const [cameraMode, setCameraMode] = useState(false);
     const {srcMap, uploadSuccess, uploadPending} = useSelector(state => state.image)
@@ -18,7 +18,7 @@ export default function UploadForm() {
 
 
     const handleFileChange = imageFile => {
-        dispatch(uploadImage(imageFile));
+        dispatch(uploadImage(imageFile, documentType));
     }
 
     const handleCameraSwitch = e => {
