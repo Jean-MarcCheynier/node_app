@@ -12,7 +12,7 @@ const initialSteps = [
         id: 1,
         title: "ID",
         component: Step1,
-        isActive: true,
+        isActive: false,
         next: 2
     },
     {
@@ -27,7 +27,7 @@ const initialSteps = [
         id: 3,
         title: "Validation",
         component: Step3,
-        isActive: false,
+        isActive: true,
         previous: 2
     },
 ]

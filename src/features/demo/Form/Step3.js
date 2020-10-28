@@ -11,7 +11,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 export default function Step3({step}){
 
     const [numPages, setNumPages] = useState(null);
-    const [pageNumber, setPageNumber] = useState(1);
+    const [pageNumber, setPageNumber] = useState(3);
   
     function onDocumentLoadSuccess({ numPages }) {
       setNumPages(numPages);
@@ -21,6 +21,7 @@ export default function Step3({step}){
         <Document file={`./European-Accident-Statement.pdf`}
             onLoadSuccess={onDocumentLoadSuccess}>
             <Page pageNumber={pageNumber}
+                renderMode={"svg"}
                 renderInteractiveForms={true} />
         </Document>
         <Button disabled={pageNumber === 1} 
