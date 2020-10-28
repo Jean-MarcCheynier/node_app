@@ -6,6 +6,8 @@ import { pdfjs } from 'react-pdf';
 
 import Button from 'react-bootstrap/Button';
 
+import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
+
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 export default function Step3({step}){
@@ -18,10 +20,9 @@ export default function Step3({step}){
     }
 
     return <Step step={step}>
-        <Document file={`./European-Accident-Statement.pdf`}
+        <Document file={`./test.pdf`}
             onLoadSuccess={onDocumentLoadSuccess}>
             <Page pageNumber={pageNumber}
-                renderMode={"svg"}
                 renderInteractiveForms={true} />
         </Document>
         <Button disabled={pageNumber === 1} 
