@@ -1,0 +1,26 @@
+$fuji-grey: #e3e3e3;
+$fuji-black: #000000;
+$fuji-red: #d30909;
+$fuji-dark-red: #711313;
+$fuji-dark-grey: #4b4b4b;
+
+$theme-colors: (
+    "primary":  $fuji-dark-red,
+    "secondary": $fuji-dark-grey,
+/*     "success": $green,
+    "info": $cyan,
+    "warning": $yellow,
+    "danger": $red,
+    "light": $gray-100,
+    "dark": $gray-800 */
+);
+
+$enable-responsive-font-sizes: true;
+
+
+//exports theme variables for js scripts
+:export {
+    @each $key, $value in $theme-colors {
+        #{$key}: $value;
+    }
+}
