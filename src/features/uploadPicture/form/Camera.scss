@@ -1,0 +1,10 @@
+
+@keyframes fadeInOut {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+  }
+
+.demo-fade-out {
+    
+    animation: 300ms linear 300ms forwards fadeInOut;
+}
