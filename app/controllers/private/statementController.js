@@ -35,4 +35,20 @@ module.exports = function(){
 			}
 		})
 	})
+	.put((req, res) => {
+		const userId = req.user._id;
+		StatementService.update(id, (err, data) => {
+			if(err){
+
+			}else{
+				if(data.ownerId === userId){
+					res.json(data);
+				}else{
+					res.status(401);
+				}
+			}
+		})
+	})
+
+	return router;
 }

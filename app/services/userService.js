@@ -1,4 +1,4 @@
-var User = require('../models/user'),
+mongoose
 UserGroup = require('../models/userGroup'),
 merge = require('merge');
 

@@ -2,7 +2,7 @@
 
 var express = require('express'),
 UserGroupService = require('../../services/userGroupService'),
-router = express.Router();
+const router = express.Router();
 
 //All bets
 module.exports = function(){

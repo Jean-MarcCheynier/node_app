@@ -18,6 +18,7 @@ var DamageSchema = mongoose.Schema({
 });
 
 var AccidentStatementSchema =  mongoose.Schema({
+    status: { type: String, enum: ['new', 'pending', 'review', 'complete'] },
     owner: { type : mongoose.Schema.ObjectId, ref: 'User'},
     driverA: { type: DriverSchema },
     driverB: { type: DriverSchema },

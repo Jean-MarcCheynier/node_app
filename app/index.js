@@ -40,7 +40,7 @@ if (config.mongo.username !== '' && config.mongo.password !== '') {
   }
 }
 console.log("connecting to : %s", config.mongo.uri);
-mongoose.connect(config.mongo.uri, dbOptions)
+mongoose.connect(config.mongo.uri, dbOptions);
 
 var db = mongoose.connection
 db.on('error', console.error.bind(console, 'connection error:'))
