@@ -4,7 +4,7 @@ var ImageRefSchema =  mongoose.Schema({
         documentType: {
             type: String, 
             default: 'other',
-            enum: ["ID_FR", "ID_BE", "GREEN_CARD", "DRIVING_LICENSE", "DAMMAGE", "other"]
+            enum: ["ID_FR", "ID_BE", "GREEN_CARD", "DRIVING_LICENSE", "DAMAGE", "other"]
         },
         RID: {type: String},
         attemptToClassiy: {type: Date},
