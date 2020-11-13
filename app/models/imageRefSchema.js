@@ -4,9 +4,11 @@ var ImageRefSchema =  mongoose.Schema({
         documentType: {
             type: String, 
             default: 'other',
-            enum: ['idCard', 'inSuranceCard', 'crash', 'drivngLicense', 'other']
+            enum: ["ID_FR", "ID_BE", "GREEN_CARD", "DRIVING_LICENSE", "DAMMAGE", "other"]
         },
         RID: {type: String},
+        attemptToClassiy: {type: Date},
+        classificationStatus: {type: String, enum: ["PENDING", "SUCCESS", "FAILED", "CANNOT"], default: "PENDING"},
         classification: {type: mongoose.Schema.Types.Mixed },
         owner: mongoose.Schema.Types.ObjectId,
         img: mongoose.Schema.Types.ObjectId,      

@@ -6,7 +6,7 @@
   "scripts": {
     "test": "test",
     "start": "node index.js",
-    "dev": "nodemon index.js",
+    "dev": "nodemon ./aoo/index.js localhost 8080",
     "debug": "nodemon index.js --inspect"
   },
   "keywords": [
@@ -58,7 +58,6 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "nodemon": "^1.19.1"
-
+    "nodemon": "^2.0.6"
   }
 }

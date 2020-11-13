@@ -33,6 +33,6 @@ var AccidentStatementSchema =  mongoose.Schema({
 
 
 // create the model for users and expose it to our app
-var AccidentStatement = mongoose.model('AccidentStatementSchema', AccidentStatementSchema);
+var AccidentStatement = mongoose.model('AccidentStatement', AccidentStatementSchema);
 
 module.exports = AccidentStatement;

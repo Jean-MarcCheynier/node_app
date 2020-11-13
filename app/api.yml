@@ -3,7 +3,7 @@ openapi: 3.0.0
 servers:
 # Added by API Auto Mocking Plugin
   - description: Local
-    url: localhost:8001/api
+    url: localhost:3000/api
 
 info:
   description: This is a simple API

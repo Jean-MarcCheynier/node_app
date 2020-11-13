@@ -1,6 +1,6 @@
-mongoose
-UserGroup = require('../models/userGroup'),
-merge = require('merge');
+var User = require('../models/user');
+var UserGroup = require('../models/userGroup');
+var merge = require('merge');
 
 var CLASS = "userService : ";  
 

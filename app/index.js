@@ -19,7 +19,6 @@ var User = require('./models/user')
 // Setup server
 console.log('Setting up express')
 var app = express()
-var http = require('http').Server(app)
 
 // Connect to db
 console.log('Connecting to DB')
@@ -74,6 +73,7 @@ User.findOne({ role: 'admin' }, function (err, data) {
 
 // Start server
 console.log('Starting web server')
+var http = require('http').Server(app)
 http.listen(config.port, config.ip, function () {
   console.log('Express server listening on %d, in %s mode', config.port, app.get('env'))
 })

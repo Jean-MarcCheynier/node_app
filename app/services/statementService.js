@@ -1,41 +1,57 @@
-var AccidentStatement = require('../models/accidentStatement'),
+'use strict';
 
-merge = require('merge');
+
+const Image = require('../models/image');
+const ImageRef = require('../models/imageRef');
+const fetch = require('node-fetch');
+const FormData = require('form-data');
+const fs = require("fs");
+const request = require('request');
+const axios = require('axios');
+const {values} = require('../utils')
+
+var url = require('url');
+var https = require('https');
+var HttpsProxyAgent = require('https-proxy-agent');
+
+const AccidentStatement = require('../models/accidentStatement');
 
 var CLASS = "StatementService : ";  
 
 var StatementService = {
-	findByOwnerId: function(ownerId, callback){
-		AccidentStatement.find({ownerId: ownerId}, function(err, data){
-			if(err){
-				return console.error(err);
-			}
-			callback(err, data);
-		});
+
+	attachImageRef: async (statement, imageRef) => {
+		console.log(`Attaching document ${imageRef.documentType}`)
+		switch(imageRef.documentType) {
+				case "ID_FR": 
+					statement.driverA = { idCard: [(imageRef._id.toString())] }
+					break;
+				default:
+					console.error("Cannot attach imageRef to statement, Invalid documentType");
+					throw({message: "Cannot attach document"}) 
+					break;
+		}
+		let updatedStatement = await statement.save();
+		console.log()
+		//updatedData.populate('driverA.idCard').exec();
+
+		return updatedStatement;
+	},
+
+
+	findByOwnerId: function(ownerId){
+		return AccidentStatement.find({owner: ownerId});
 	},
 	
 	findById: function(id, callback){
-		AccidentStatement.findById(id, function(err, data){
-			if(err){
-				return console.error(err);
-			}
-			callback(err, data);
-		});
+		return AccidentStatement.findById(id);
 	},
 
 	save: function(data, callback){
 		var accidentStatement = new AccidentStatement(data);
-		console.info(user);
-		accidentStatement.save(function(err, data){
-			if(err){
-				console.log(CLASS.concat("save err :'").concat(err.code).concat("'"));
-			}else{
-				console.log(CLASS.concat("save succes"));
-			}
-			callback(err, data);
-		})
-
+		return accidentStatement.save(data)
 	},
+
 	update: function(data, callback){
 		delete data.local;
 		AccidentStatement.findByIdAndUpdate(data._id,
