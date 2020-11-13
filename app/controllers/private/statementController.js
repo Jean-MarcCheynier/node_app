@@ -81,6 +81,8 @@ module.exports = function(){
 		const { docType,  statementId } = req.params;
 		console.log(`statementId ${statementId}`)
 		const user = req.user;
+
+		// Control the parameters
 		if(!statementId){
 			res.status(403).send({message: "Param statementId is missing"})
 			return
@@ -90,6 +92,7 @@ module.exports = function(){
 		if(!req.file)
 			res.status(403).send({message: "File is missing"})
 		
+		//Retreive the statement
 		let statement;
 		try {
 			statement = await StatementService.findById(statementId)
@@ -97,9 +100,11 @@ module.exports = function(){
 			res.status(404).send({message: "Cannot upload document, Statement not found"})
 			return
 		}
-			
+		// Ensure user has the right to modify it
 		if(statement.owner._id.toString() !== user.id)
 			res.status(401).send({message: "Unauthorized, you cannot upload to this statement"});
+
+		// Try to save image in DB
 		let imageRef
 		try {
 			imageRef = await ImageService.saveInDB(req.user, docType, req.file)
@@ -107,18 +112,13 @@ module.exports = function(){
 			res.status(500).send(e)
 			return
 		}
-		let classifiedImage;
-		try {
-			classifiedImage = await ImageService.classify(imageRef)
-		} catch( e ) {
-			console.log("Error durring classification")
-		}
-		let updatedStatement
-		try {
-			updatedStatement = await StatementService.attachImageRef(statement, (classifiedImage)?classifiedImage:imageRef);
-		} catch ( e ) {
-			res.status(500).send(e);
-		}
+
+		// Try to classify Image
+		let classifiedImage = await ImageService.classify(req.file, imageRef)
+
+
+		//Update the statement 
+		let updatedStatement = await StatementService.attachImageRef(statement, (classifiedImage)?classifiedImage:imageRef);
 
 		res.json(updatedStatement)
 

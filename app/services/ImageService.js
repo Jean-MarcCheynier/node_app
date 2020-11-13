@@ -6,17 +6,28 @@ const FormData = require('form-data');
 const fs = require("fs");
 const request = require('request');
 const axios = require('axios');
-const { values } = require("..//utils")
+const { values } = require("../utils")
 
-var url = require('url');
-var https = require('https');
-var HttpsProxyAgent = require('https-proxy-agent');
 const { O_CREAT } = require('constants');
+
+const formRecognizerCodes = {
+  "ID_FR":"df59ec7e-b341-4fc7-9d12-d3911a958619",
+  "ID_BE":"7c8b063b-423c-49a0-8de9-5e8207989a64",
+  "GREEN_CARD_STICKER":"4a271819-31d4-434b-8e96-98636ecace67",
+  "GREEN_CARD":"55ae359d-569c-47eb-a72c-63fe5489e098",
+  "DRIVING_LICENSE":"aa49cd75-acd4-482e-aba6-69f6b942a17a"
+} 
 
 
 const CLASS = "imageService : ";
 
-const classify = async imageRef => {
+function sleep(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+} 
+
+const classify = async (file, imageRef) => {
 	if(!imageRef.documentType){
 		console.error("Unable to address doc to classification service. No document type provided")
 		imageRef.attemptToClassiy = new Date();
@@ -29,12 +40,38 @@ const classify = async imageRef => {
 			case "ID_BE":
 			case "GREEN_CARD":
 			case "DRIVING_LICENSE":
-				try {
-					classification = await postToFormRecognizer(imageRef)
-				} catch(e) {
+
+				console.log("Classify formRecognizer");
+				const {documentType} = imageRef
+
+				const operationLocation = await postToFormRecognizer(documentType, file)
+					.then( response => {
+						// Return the location of the resource
+						console.log("POST SUCCESS");
+						return response.headers["operation-location"]
+					})
+					.catch( e => {
+						console.log(e);
+						console.log("Form RecognizerError : Failed to post image")
+						imageRef.attemptToClassiy = new Date();
+						imageRef.classificationStatus = "FAILED";
+					})
+
+				if(operationLocation){
+					console.log(operationLocation);
+					await sleep(5000);
+					console.log("Return")
+					classification = await getOperationFormRecognizer(operationLocation);
+					console.log(classification)
+					imageRef.classification = classification
+					imageRef.attemptToClassiy = new Date();
+					imageRef.classificationStatus = "SUCCESS";
+				}else{
+					console.log("Form RecognizerError : Failed to get details")
 					imageRef.attemptToClassiy = new Date();
 					imageRef.classificationStatus = "FAILED";
 				}
+				
 				break;
 			case "DAMMAGE":
 				try {
@@ -48,26 +85,47 @@ const classify = async imageRef => {
 				imageRef.attemptToClassiy = new Date();
 				imageRef.classificationStatus = "CANNOT";
 		}
-		return imageRef;
+
+		classifiedImageRef = await imageRef.save()
+		return classifiedImageRef;
 	}
 }
 
-const postToFormRecognizer = async (imageRef) => {
-	const MODELID = values.formRecognizerModels[imageRef.documentType]
+/**
+ * Returns a location 'operation-location' in the header 
+ * @param {*} documentType 
+ * @param {*} imageRef
+ * @returns {Promise<any>}
+ */
+const postToFormRecognizer = async (documentType, imageRef) => {
+	const MODELID = formRecognizerCodes[documentType]
 	const SUBSCRIPTION_KEY = 'e6b14e091bc845149c7613b767f6d017'
 	console.log(`MODELID ${MODELID}`);
-	const URL = `https://dxsformrecognizer.cognitiveservices.azure.com/formrecognizer/v2.1 -preview.1/custom/models/${MODELID}/analyze`;
+	const URL = `https://dxsformrecognizer.cognitiveservices.azure.com/formrecognizer/v2.1-preview.1/custom/models/${MODELID}/analyze`;
 	console.log("Creation of a form");
 	const form = new FormData();
 	form.append('name', 'image');
-	const file = fs.createReadStream(imageRef.path);
-	form.append('file', file);
+
+	var imageData = fs.readFileSync(imageRef.path);
 	const headers = {
-		...form.getHeaders(),
 		'Content-type': 'image/jpeg',
 		'Ocp-Apim-Subscription-Key': SUBSCRIPTION_KEY
 	}
-	return axios.post(URL, form, { headers: {...form.getHeaders()}  });
+	console.log(headers);	
+	return axios.post(URL, imageData, { headers })
+}
+
+const getOperationFormRecognizer = async (operationLocation) => {
+	const SUBSCRIPTION_KEY = 'e6b14e091bc845149c7613b767f6d017'
+	const headers = {
+		'Content-type': 'application/json',
+		'Ocp-Apim-Subscription-Key': SUBSCRIPTION_KEY
+	}
+	return axios.get(operationLocation, { headers })
+		.then( response => {
+			console.log("GET SUCCESS");
+			return response.data;
+		});
 }
 
 /**

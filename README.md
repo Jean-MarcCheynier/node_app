@@ -27,7 +27,8 @@ Specific configurations can be found in :
 - Post image top server
   POST : https://dxsformrecognizer.cognitiveservices.azure.com/formrecognizer/v2.1 -
 preview.1/custom/models/{MODELID}/analyze 
-
+  Content-type: image/jpeg
+  Ocp-Apim-Subscription-Key: e6b14e091bc845149c7613b767f6d017 
 
 - Get description
   Return: Operaration-Location : <ULR>

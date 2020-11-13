@@ -21,21 +21,30 @@ var CLASS = "StatementService : ";
 var StatementService = {
 
 	attachImageRef: async (statement, imageRef) => {
-		console.log(`Attaching document ${imageRef.documentType}`)
 		switch(imageRef.documentType) {
 				case "ID_FR": 
-					statement.driverA = { idCard: [(imageRef._id.toString())] }
+				case "ID_BE":
+					if(statement.driverA){
+						console.log("DriverA present");
+						statement.driverA.idCard.push(imageRef._id)
+					}else{
+						console.log("DriverA not present");
+						statement.driverA = { idCard: [imageRef._id] }
+					}
+
 					break;
 				default:
 					console.error("Cannot attach imageRef to statement, Invalid documentType");
 					throw({message: "Cannot attach document"}) 
 					break;
 		}
-		let updatedStatement = await statement.save();
-		console.log()
-		//updatedData.populate('driverA.idCard').exec();
 
-		return updatedStatement;
+		const newStatement = await statement.save();
+		//Populate it with the idCards
+		await newStatement.populate('driverA.idCard').execPopulate()
+
+		return newStatement;
+		
 	},
 
 
