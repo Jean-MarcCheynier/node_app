@@ -75,6 +75,14 @@ module.exports = function(){
 		})
 	})
 
+	//DownloadPDF
+	router.route('/:id/pdf')
+	.get((req, res) => {
+		const userId = req.user._id;
+		let statement = await StatementService.findById(id).catch( e => {/* Handle error */})
+		const pdf = PDFService.generate();
+	})
+
 
 	router.route('/:statementId/upload/doc/:docType')
 	.post(upload.single('file'), async (req, res) => {

@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 
 
 var DriverSchema = mongoose.Schema({
-    firstName: {type: String},
+    firstName: {type: String, default : "valueTest"},
     lastName: {type: String},
     natioanlity: {type: String},
     nationalID: {type: String},
