@@ -51,8 +51,8 @@ const getResult = async (operationLocationURL) => {
   return axios.get(operationLocationURL, { headers })
     .then(response => {
       logger.debug('Retreived successfully')
-      logger.debug(response)
-      return response
+      logger.debug(response.data)
+      return response.data
     })
     .catch( e => {
       logger.error('Could not retreive operation from Azure Form Recognizer')
