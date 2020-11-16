@@ -66,42 +66,51 @@ module.exports = function () {
   router.route('/:statementId/upload/doc/:docType')
     .post(upload.single('file'), async (req, res) => {
       const { docType, statementId } = req.params
-      logger.info(`Exporting document type : ${docType} in statement ${statementId}`)
       const user = req.user
+      logger.info(`Upload docType : ${docType} in statement ${statementId}`)
 
-      // Control the parameters
       if (!statementId) {
+        logger.error('Missing parameter \'statementId\'')
         res.status(403).send({ message: 'Param statementId is missing' })
         return
       }
-      if (!docType || !['ID_FR', 'ID_BE', 'GREEN_CARD', 'DRIVING_LICENSE', 'DAMAGE'].includes(docType)) { res.status(403).send({ message: 'Param docType is missing' }) }
-      if (!req.file) { res.status(403).send({ message: 'File is missing' }) }
-
-      // Retreive the statement
-      let statement
-      try {
-        statement = await StatementService.findById(statementId)
-      } catch (e) {
-        res.status(404).send({ message: 'Cannot upload document, Statement not found' })
-        return
+      if (!docType || !['ID_FR', 'ID_BE', 'GREEN_CARD', 'DRIVING_LICENSE', 'DAMAGE'].includes(docType)) {
+        logger.error('Missing parameter \'docType\'')
+        res.status(403).send({ message: 'Missing parameter \'docType\'' })
       }
-      // Ensure user has the right to modify it
-      if (statement.owner._id.toString() !== user.id) { res.status(401).send({ message: 'Unauthorized, you cannot upload to this statement' }) }
-
-      // Try to save image in DB
-      let imageRef
-      try {
-        imageRef = await ImageService.saveInDB(req.user, docType, req.file)
-      } catch (e) {
-        res.status(500).send(e)
-        return
+      if (!req.file) {
+        logger.error('Missing file in request \'File\'')
+        res.status(403).send({ message: 'File is missing' })
       }
 
-      // Try to classify Image
+      const statement = await StatementService.findById(statementId)
+        .catch(e => {
+          logger.error('Cannot upload document to statement. Statement not found')
+          res.status(404).send({ message: 'Cannot upload document, Statement not found' })
+        })
+
+      if (statement.owner._id.toString() !== user.id) {
+        logger.error('Unauthorized, insufficient permission to access this statement')
+        res.status(401).send({ message: 'Unauthorized, you cannot upload to this statement' })
+      }
+
+      const imageRef = await ImageService.saveInDB(req.user, docType, req.file)
+        .catch(e => {
+          logger.error('Failed to store image in DB')
+          res.status(500).send(e)
+        })
+
       const classifiedImage = await ImageService.classify(req.file, imageRef)
+        .catch(e => {
+          logger.error('Failed to classify')
+          res.status(500).send(e)
+        })
 
-      // Update the statement
       const updatedStatement = await StatementService.attachImageRef(statement, (classifiedImage) || imageRef)
+        .catch(e => {
+          logger.error('Failed to attach image to statement')
+          res.status(500).send(e)
+        })
 
       res.json(updatedStatement)
     })

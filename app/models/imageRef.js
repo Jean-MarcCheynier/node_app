@@ -1,6 +1,6 @@
-var mongoose = require('mongoose');
-var ImageRefSchema =  require('./imageRefSchema');
+const mongoose = require('mongoose')
+const ImageRefSchema = require('./imageRefSchema')
 
-var ImageRef = mongoose.model('ImageRef', ImageRefSchema);
+const ImageRef = mongoose.model('ImageRef', ImageRefSchema)
 
-module.exports = ImageRef;
+module.exports = ImageRef

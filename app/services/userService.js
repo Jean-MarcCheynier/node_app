@@ -12,7 +12,7 @@ const UserService = {
     })
   },
 
-  findById: (id ) => User.findById(id),
+  findById: (id) => User.findById(id),
   findOne: function (args, callback) {
     User.findOne(args, function (err, data) {
       if (err) {

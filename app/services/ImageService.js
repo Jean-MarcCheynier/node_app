@@ -1,7 +1,6 @@
 
 const Image = require('../models/image')
 const ImageRef = require('../models/imageRef')
-const FormData = require('form-data')
 const { FORM_RECOGNIZER_MODEL_ID, DOC_TYPES } = require('../utils')
 const AzureFRService = require('./AzureFormRecognizerService')
 const fs = require('fs')
@@ -17,8 +16,8 @@ function sleep (ms) {
 /**
  * Filter File on docType and send it either to the document analyser of AzureFRService
  * Or to the image classification API classifierService
- * @param {*} file 
- * @param {*} imageRef 
+ * @param {*} file
+ * @param {*} imageRef
  */
 const classify = async (file, imageRef) => {
   logger.info('Classify')
@@ -52,7 +51,10 @@ const classify = async (file, imageRef) => {
         imageRef.classificationStatus = 'CANNOT'
     }
 
-    const classifiedImageRef = await imageRef.save()
+    const classifiedImageRef = await imageRef.save().then(data => {
+      logger.info('Saved with success')
+      return data
+    })
     return classifiedImageRef
   }
 }
@@ -71,6 +73,7 @@ const analyseDocument = async (documentType, file) => {
       logger.log('error', 'Unable to post file to azure form recognizer')
       throw (new Error({ message: 'Unable to post file to azure form recognizer' }))
     })
+  logger.info('Analyse OK')
   return analyse
 }
 
@@ -112,7 +115,7 @@ const saveImgFile = function (imageRef, callback) {
     })
 }
 
-const saveImgRef = function (user, imageRef, callback) {
+const saveImgRef = function (user, imageRef) {
   return ImageRef.create({
     owner: user._id,
     img: imageRef._id,
@@ -122,36 +125,27 @@ const saveImgRef = function (user, imageRef, callback) {
     documentType: imageRef.documentType,
     classification: imageRef.classification
   }).then(newImageRef => {
-    if (callback) {
-      callback(err, newImageRef)
-    }
     return newImageRef
   }).catch(err => console.error(err))
 }
 
 const saveInDB = async (user, docType, imageRef) => {
-  console.log(`saving new ${docType} in DB...`)
-  let newImage
-  try {
-    newImage = await saveImgFile(imageRef)
-  } catch (e) {
-    console.log('Failed to save ImageFile')
-    throw ({ message: 'Failed to save ImageFile' })
-  }
+  logger.prompt('Saving in DB...')
+  const newImage = await saveImgFile(imageRef)
+    .catch(e => {
+      logger.error('Failed to save ImageFile')
+      throw Error('Failed to save ImageFile')
+    })
 
-  console.log('Image File saved')
   imageRef._id = newImage._id.toString()
   imageRef.documentType = docType
+  logger.prompt('Image saved as Blob in DB')
+  logger.prompt('Saving imageRef ...')
+  const newImageRef = await saveImgRef(user, imageRef)
+    .catch(e => {
+      throw new Error({ message: 'Failed to save ImageRef' })
+    })
 
-  console.log('Saving imageRef')
-  let newImageRef
-  try {
-    newImageRef = await saveImgRef(user, imageRef)
-  } catch (e) {
-    console.log('Failed to save imageRef')
-    throw ({ message: 'Failed to save ImageRef' })
-  }
-  console.log('Saved ImageRef in DB')
   return newImageRef
 }
 
@@ -163,14 +157,14 @@ const save = function (user, imageRef, callback) {
     saveImgFile(imageRef, (imgSaveErr, newImage) => {
       if (imgSaveErr) {
         console.log('Error could not save image')
-        return callback(err)
+        return callback()
       } else {
         console.log(classifyResponse.data.message)
         imageRef._id = newImage._id
         saveImgRef(user, imageRef, (refSaveErr, ref) => {
           if (refSaveErr) {
             console.log('Error could not save Ref')
-            return callback(err)
+            return callback()
           } else {
             console.log('Ref saved successfuly')
             callback(null, ref)

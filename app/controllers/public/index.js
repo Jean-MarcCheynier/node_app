@@ -48,7 +48,7 @@ module.exports = function () {
       } else {
         user.comparePassword(req.body.password, function (err, isMatch) {
           if (isMatch && !err) {
-            const token = jwt.sign(user.toObject(), process.env.JWT_SECRET, { expiresIn: '1d' })
+            const token = jwt.sign(user.toObject(), process.env.JWT_SECRET, { expiresIn: '10d' })
             const tosend = user.toJSON()
             if (tosend.role === 'pre') {
               res.status(401).send({ success: false, msg: 'Your account has been created but not yet validated by an administrator.' })

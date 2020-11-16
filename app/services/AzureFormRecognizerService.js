@@ -32,7 +32,7 @@ const postFile = async (modelId, imageRef) => {
   }
   return axios.post(URL, imageData, { headers })
     .then(response => response.headers['operation-location'])
-    .catch( e => {
+    .catch(e => {
       logger.error('Could not post file to Azure Form Recognizer')
     })
 }
@@ -54,7 +54,7 @@ const getResult = async (operationLocationURL) => {
       logger.debug(response.data)
       return response.data
     })
-    .catch( e => {
+    .catch(e => {
       logger.error('Could not retreive operation from Azure Form Recognizer')
     })
 }

@@ -47,11 +47,10 @@ userSchema.pre('save', function (next) {
 // Comparaison des mots de passes reçus et en base
 userSchema.methods.comparePassword = function (pw, cb) {
   bcrypt.compare(pw, this.local.password, function (err, isMatch) {
-    console.log('callback')
-	  	if (err) {
+    if (err) {
       return cb(err)
-	  	}
-	  	cb(null, isMatch)
+    }
+    cb(null, isMatch)
   })
 }
 
