@@ -21,9 +21,17 @@ const DriverSchema = mongoose.Schema({
   }
 })
 
-const DamageSchema = mongoose.Schema({
-  images: [{ type: mongoose.Schema.ObjectId, ref: 'ImageRef' }]
-})
+var DriverSchema = mongoose.Schema({
+    firstName: {type: String, default : "valueTest"},
+    lastName: {type: String},
+    natioanlity: {type: String},
+    nationalID: {type: String},
+    phone: {type: String},
+    email: {type: String},
+    greenCard: [{type : mongoose.Schema.ObjectId, ref: 'ImageRef'}],
+    idCard: [{type : mongoose.Schema.ObjectId, ref: 'ImageRef'}],
+    drivingLicense: [{type : mongoose.Schema.ObjectId, ref: 'ImageRef'}]
+});
 
 const AccidentStatementSchema = mongoose.Schema({
   status: { type: String, enum: ['new', 'pending', 'review', 'complete'] },
