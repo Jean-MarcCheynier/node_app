@@ -66,6 +66,8 @@ module.exports = function () {
   router.route('/:statementId/upload/doc/:docType')
     .post(upload.single('file'), async (req, res) => {
       const { docType, statementId } = req.params
+      const { documentType, driver } = req.body
+      logger.prompt(`Doctype : ${documentType} : ${driver}`)
       const user = req.user
       logger.info(`Upload docType : ${docType} in statement ${statementId}`)
 
@@ -106,7 +108,7 @@ module.exports = function () {
           res.status(500).send(e)
         })
 
-      const updatedStatement = await StatementService.attachImageRef(statement, (classifiedImage) || imageRef)
+      const updatedStatement = await StatementService.attachImageRef(statement, (classifiedImage) || imageRef, driver)
         .catch(e => {
           logger.error('Failed to attach image to statement')
           res.status(500).send(e)
