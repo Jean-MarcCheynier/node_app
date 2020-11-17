@@ -1,0 +1,419 @@
+openapi: 3.0.0
+info:
+  description: "Demo IPA - middelware API \n Use token
+    `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2NhbCI6eyJwYXNzd29yZCI6IiQyYiQxMCRDRzBhWS5aM0hkQ1hXbS5aaDZzYXguSk1HbXpsdjN5c3JqdDdxZS83WGxxYjdSeC5GRzJWdSIsImxvZ2luIjoidmljdG9yQGdlcmZhdWQuY29tIn0sInJvbGUiOiJwcmUiLCJsYW5nIjoiZnIiLCJsZWFndWVzIjpbXSwiX2lkIjoiNWZhZmQxMjY5MzQ2Y2MxZjE1OTBhNDcxIiwibmFtZSI6InZpY3RvckBnZXJmYXVkLmNvbSIsImNyZWF0ZWRfYXQiOiIyMDIwLTExLTE0VDEyOjQ0OjIyLjMwNloiLCJ1cGRhdGVkX2F0IjoiMjAyMC0xMS0xNFQxMjo0NDoyMi4zMDZaIiwiX192IjowLCJpYXQiOjE2MDUzNjU0NTMsImV4cCI6MTYwNjIyOTQ1M30.Vu46o6xuY_njlEmY7v9fukqlHw8Yi72S7kxA9LjB_Yw` to test the authorization filters."
+  version: 1.0.0
+  title: 'DEMO IPA'
+  contact:
+    email: 'jm+fujitsu@cheynier.com'
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+tags:
+  - name: user
+    description: 'Operations about user'
+  - name: statement
+    description: 'Operation related to invitations'
+paths:
+  /signup:
+    post:
+      tags:
+        - user
+      summary: Signup in app
+      description: "Signup a new user. A new User is created with a status 'PRE'"
+      operationId: signUp
+      requestBody:
+        $ref: "#/components/requestBodies/UserSignUp"
+      responses:
+        "500":
+          description: "Server Error : 
+            MONGO_ERROR_DUPLICATE_FIELD: if user already exist"
+  /signin:
+    post:
+      tags:
+        - user
+      summary: Signin in app
+      description: ""
+      operationId: signIn
+      requestBody:
+        $ref: "#/components/requestBodies/UserSignIn"
+      responses:
+        "200":
+          description: "Return the user with authentication token"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/requestBodies/User"
+        "400":
+          description: Invalid Credentials
+
+  /users:
+    get:
+      tags:
+        - user
+      summary: Get all users
+      description: "Return all users of the app. (Access rights to be set on that route)"
+      operationId: getAll
+      responses:
+        "401":
+          description: Unauthorized  
+  /users/me:
+    get:
+      tags:
+        - user
+      summary: Get connected user using JWT
+      description: "Get User based on token. Used it to restore current session in case of page refresh"
+      operationId: getMe
+      responses:
+        "200": 
+          $ref: "#/components/responses/UserPrivate"
+        "401":
+          description: Unauthorized  
+  /users/{userId}:
+    get:
+      tags:
+        - user
+      summary: Get user by ID
+      description: "Get User based on its ID, private part 'local: { login:<login>, password:<password> }' is dropped from the object"
+      operationId: getUser
+      parameters:
+        - name: userId
+          in: path
+          description: ID of user to return
+          required: true
+          schema:
+            type: string
+      responses:
+        "200": 
+          $ref: "#/components/responses/UserPublic"
+        "401":
+          description: Unauthorized          
+    put:
+      tags:
+        - user
+      summary: Update an existing user
+      description: "Provided fields will be updated"
+      operationId: updateUser
+      parameters:
+        - name: userId
+          in: path
+          description: ID of user to update
+          required: true
+          schema:
+            type: string
+          example: 
+            5fa717131562d71c187d9e2b
+            
+            
+        
+      requestBody:
+        $ref: "#/components/requestBodies/UserUpdate"
+      responses:
+        "400":
+          description: Invalid ID supplied
+        "401":
+          description: Unauthorized
+        "404":
+          description: User not found
+        "405":
+          description: Validation exception 
+    delete:
+      tags:
+        - user
+      summary: Delete an existing user
+      description: ""
+      operationId: deleteUser
+      parameters:
+        - name: userId
+          in: path
+          description: ID of user to return
+          required: true
+          schema:
+            type: string
+      responses:
+        "400":
+          description: Invalid ID supplied
+        "401":
+          description: Unauthorized
+        "404":
+          description: User not found 
+
+  /invites/{inviteId}/accept:
+    put:
+      tags:
+        - invite
+      summary: Accept an invitation to join a league
+      description: "Accept an invitation, Set the invitation status to 'ACCEPTED' and change the status of the participant in the league from 'PRE' to 'PARTICIPANT'"
+      operationId: acceptInvite
+      parameters:
+        - name: inviteId
+          in: path
+          description: ID of invitation to accept 
+          required: true
+          schema:
+            type: string
+      responses:
+        "400":
+          description: Invalid ID supplied
+        "401":
+          description: Unauthorized
+        "404":
+          description: User not found
+        "405":
+          description: Validation exception 
+  /invites/{inviteId}/reject:
+    put:
+      tags:
+        - invite
+      summary: Decline an invitation to join a league
+      description: "Decline an invitation, Set the invitation status to 'REJECTED' and remove the participant in the league from 'PRE' to 'PARTICIPANT'"
+      operationId: rejectInvite
+      parameters:
+        - name: inviteId
+          in: path
+          description: ID of invitation to accept 
+          required: true
+          schema:
+            type: string
+      responses:
+        "404":
+          description: Invite not found
+  /invites/{inviteId}:
+    get:
+      tags:
+        - invite
+      summary: Decline an invitation to join a league
+      description: "Decline an invitation, Set the invitation status to 'ACCEPTED' and remove the participant in the league from 'PRE' to 'PARTICIPANT'"
+      operationId: acceptInvite
+      parameters:
+        - name: inviteId
+          in: path
+          description: ID of invitation to accept 
+          required: true
+          schema:
+            type: string
+      responses:
+        "404":
+          description: Invite not found
+    delete:
+      tags:
+        - invite
+      summary: Decline an invitation to join a league
+      description: "Decline an invitation, Set the invitation status to 'ACCEPTED' and remove the participant in the league from 'PRE' to 'PARTICIPANT'"
+      operationId: acceptInvite
+      parameters:
+        - name: inviteId
+          in: path
+          description: ID of invitation to accept 
+          required: true
+          schema:
+            type: string
+      responses:
+        "404":
+          description: Invite not found
+  /invites/mine:
+    get:
+      tags:
+        - invite
+      summary: Get My Invites
+      description: ""
+      operationId: getMyInvites
+      responses:
+        "404":
+          description: Cannot fetch your invites not found
+  /invites/received:
+    get:
+      tags:
+        - invite
+      summary: Get invites received
+      description: ""
+      operationId: getInviteReceived
+      responses:
+        "404":
+          description: Cannot fetch your invites not found
+
+servers:
+  - url: /api
+    description: NFA API - Test Me Live Bitch!
+components:
+  requestBodies:
+    NewLeague:
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [name]
+            properties:
+              name:
+                description: "Name of the team"
+                type: string
+          examples:
+            team:
+              value: { name: "Sint-Gillis FC"}
+
+      description: List of User object
+      required: true
+    UserArray:
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/UserPublic"
+      description: List of User object
+      required: true
+    User:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UserPublic"
+      description: User object
+      required: true
+    UserSignUp:
+      content:
+        application/json:
+          schema:
+            type: object
+            required: ['login', 'password']
+            properties:
+              login: 
+                type: string
+              email: 
+                type: string
+              password: 
+                type: string  
+          examples: 
+            login:
+              summary: "Signup User 'test' "
+              value: {"login": "test", "password": "NFA@123"}
+            loginWithEmail:
+              summary: "Signup User 'test' with email"
+              value: {"login": "Tony", "password": "NFA@123", "email": "tony@nfa.com"}
+    UserSignIn:
+      content:
+        application/json:
+          schema:
+            type: object
+            required: ['login', 'password']
+            properties:
+              login: 
+                description: 'Login or Email'
+                type: string
+              password: 
+                type: string  
+          examples: 
+            defaultAdmin:
+              summary: "Signin with User 'Admin' default "
+              value: {"login": "Admin", "password": "test"}
+            tonyUser:
+              summary: "Signin with User 'tony' "
+              value: {"login": "tony@nfa.com", "password": "NFA@123"}
+            victorG:
+              summary: "Signin with User 'Victor' "
+              value: {"login": "victor@gerfaud.fr", "password": "aaaaaa"}
+    UserUpdate:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserPrivate'
+          examples: 
+            login:
+              summary: "Modify users email and name"
+              value: {"email": "ichanged@nfa.com", "name": "JavierP"}
+
+  responses:
+    UserArray:
+      description: "Public info of a user"
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/UserPrivate"
+    UserPublic:
+      description: "Description"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UserPublic"
+    UserPrivate:
+      description: "Full user info"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UserPrivate"
+
+  schemas:
+    UserPublic:
+      type: object
+      properties:
+        _id:
+          type: string
+        role:
+          type: string
+          enum: 
+            - "user"
+            - "pre"
+            - "admin"
+        username:
+          type: string
+    
+    UserPrivate:
+      type: 'object'
+      properties:
+        role:
+          description: 'Role of the user (Can only be changed with suffcient access rights)'
+          type: string
+          enum: 
+            - "user"
+            - "pre"
+            - "admin"
+        lang: 
+          description: 'Preferred Language'
+          type: string
+        name:
+          description: 'Username visible by other players' 
+          type: string
+        email:
+          description: 'Email address' 
+          type: string
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+      xml:
+        name: Category
+    Tag:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+      xml:
+        name: Tag
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        type:
+          type: string
+        message:
+          type: string
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: 'bearer'
+      description: 'JWT Token'
+      bearerFormat: "JWT"
+      
+security:
+  - bearerAuth: []

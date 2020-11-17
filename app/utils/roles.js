@@ -1,5 +1,5 @@
 exports.roles = {
-    user: 'user', 
-    pre: 'pre', 
-    admin:'admin'
-};
+  user: 'user',
+  pre: 'pre',
+  admin: 'admin'
+}

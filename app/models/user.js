@@ -1,9 +1,6 @@
-var mongoose = require('mongoose'),
-UserSchema = require('./userSchema');
+const mongoose = require('mongoose')
+const UserSchema = require('./userSchema')
 
+const User = mongoose.model('User', UserSchema)
 
-
-// create the model for users and expose it to our app
-var User = mongoose.model('User', UserSchema);
-
-module.exports = User;
+module.exports = User

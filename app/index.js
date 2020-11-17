@@ -1,82 +1,34 @@
 /**
  * Main application file
  */
-
 'use strict'
 
-// Set default node environment to development
-require('dotenv').config();
-process.env.NODE_ENV = process.env.NODE_ENV || 'development'
-console.log('Starting MODE : ' + process.env.NODE_ENV)
+require('dotenv').config()
+const logger = require('./config/winston')
+const http = require('http')
+logger.info(`Starting MODE:  ${process.env.NODE_ENV}`)
 
-var express = require('express')
-var mongoose = require('mongoose')
-var promise = require('bluebird')
-var config = require('./config/environment')
-var passport = require('passport')
-var User = require('./models/user')
-
-// Setup server
-console.log('Setting up express')
-var app = express()
-var http = require('http').Server(app)
-
-// Connect to db
-console.log('Connecting to DB')
-mongoose.Promise = promise
-
-var dbOptions = {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useCreateIndex: true,
-  useFindAndModify: false
-}
-
-// If auth specified, add auth config to the dbOptions object
-if (config.mongo.username !== '' && config.mongo.password !== '') {
-  dbOptions.auth = {
-    user: config.mongo.username,
-    password: config.mongo.password
-  }
-}
-console.log("connecting to : %s", config.mongo.uri);
-mongoose.connect(config.mongo.uri, dbOptions)
-
-var db = mongoose.connection
-db.on('error', console.error.bind(console, 'connection error:'))
-db.once('openUri', function () {
-  // we're connected!
-  console.log('CONNECTED TO : ' + config.mongo.uri)
-})
-
-require('./config/passport')(passport)
-require('./config/express')(app)
+// Require all config files
+require('./config/mongoDB')()
+const passport = require('./config/passport')()
+const app = require('./config/express')()
 require('./routes')(app, passport)
 
-// Seed Admin User
-User.findOne({ role: 'admin' }, function (err, data) {
-  if (err) {
-    console.error('An error occured while creating user')
-  } else {
-    if (!data) {
-      var user = new User()
-      user.role = 'admin'
-      user.local = {
-        login: 'Admin',
-        password: 'test'
-      }
-      user.save()
-    } else {
-      console.log('User already exist.')
-    }
-  }
-})
-
 // Start server
-console.log('Starting web server')
-http.listen(config.port, config.ip, function () {
-  console.log('Express server listening on %d, in %s mode', config.port, app.get('env'))
+const server = http.createServer(app)
+server.listen(process.env.PORT)
+server.on('error', (e) => {
+  switch (e.code) {
+    case 'EADDRINUSE':
+      logger.error(`Port ${process.env.PORT} already in use`)
+      logger.info(`You can kill it running th following comande : kill -9 $(lsof -t -i:${process.env.PORT})`)
+      break
+    default:
+      logger.error('Server could not start')
+      break
+  }
+  logger.error()
 })
+server.on('listening', () => logger.info(`Express server listening on ${process.env.PORT}, in ${process.env.NODE_ENV} mode`))
 
-// Expose app
 exports = module.exports = app

@@ -1,22 +1,30 @@
-var JwtStrategy = require('passport-jwt').Strategy,
-ExtractJwt = require('passport-jwt').ExtractJwt,
-config = require("./environment");
+const passport = require('passport')
+const JwtStrategy = require('passport-jwt').Strategy
+const ExtractJwt = require('passport-jwt').ExtractJwt
+const logger = require('./winston')
 
 // load up the user model
-var UserService = require('../services/userService');
+const UserService = require('../services/userService')
 
+function getPassportConfig () {
+  const opts = {
+    jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme('jwt'),
+    secretOrKey: process.env.JWT_SECRET
+  }
+  passport.use(new JwtStrategy(opts, function (jwtPayload, done) {
+    UserService.findById(jwtPayload._id)
+      .then(user => {
+        logger.debug('Auth success')
+        done(null, user)
+        return true
+      })
+      .catch(e => {
+        logger.debug('Auth error')
+        done(e, false)
+        return false
+      })
+  }))
+  return passport
+}
 
-module.exports = function(passport) {   
-    var opts = {};
-    opts.jwtFromRequest = ExtractJwt.fromAuthHeaderWithScheme("jwt");
-    opts.secretOrKey = config.secrets.jwt;
-    passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
-        UserService.findById(jwt_payload._id, function(err, user) {
-            if (user) {
-                done(null, user);
-            } else {
-                done(null, false);
-            }
-        });
-    }));
-};
+module.exports = getPassportConfig

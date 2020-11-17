@@ -1,7 +1,9 @@
-const errors = require("./errors.js");
-const roles = require("./roles.js");
+const errors = require('./errors.js')
+const roles = require('./roles.js')
+const values = require('./values.js')
 
 module.exports = {
-    ...errors,
-    ...roles
+  ...errors,
+  ...roles,
+  ...values
 }

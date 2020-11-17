@@ -1,0 +1,79 @@
+{
+	"folders": [
+		{
+			"name": "NFA_BE",
+			"path": "."
+		}
+	],
+	"settings": {
+		"better-comments.multilineComments": true,
+		"better-comments.tags": [
+      {
+        "tag": "!",
+        "color": "#FF2D00",
+        "strikethrough": false,
+        "underline": false,
+        "backgroundColor": "transparent",
+        "bold": false,
+        "italic": false
+      },
+      {
+        "tag": "?",
+        "color": "#3498DB",
+        "strikethrough": false,
+        "underline": false,
+        "backgroundColor": "transparent",
+        "bold": false,
+        "italic": false
+      },
+      {
+        "tag": "//",
+        "color": "#474747",
+        "strikethrough": true,
+        "underline": false,
+        "backgroundColor": "transparent",
+        "bold": false,
+        "italic": false
+      },
+      {
+        "tag": "todo",
+        "color": "#FF8C00",
+        "strikethrough": false,
+        "underline": false,
+        "backgroundColor": "transparent",
+        "bold": false,
+        "italic": false
+      },
+      {
+        "tag": "*",
+        "color": "#98C379",
+        "strikethrough": false,
+        "underline": false,
+        "backgroundColor": "transparent",
+        "bold": false,
+        "italic": false
+      }
+    ],
+    "eslint.packageManager": "yarn"
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+
+
+      {
+        "type": "node",
+        "request": "launch",
+        "name": "Launch Program",
+        "skipFiles": [
+          "<node_internals>/**"
+        ],
+        "program": "${workspaceFolder}/src/index.ts",
+        "outFiles": [
+          "${workspaceFolder}/dist/**/*.ts"
+        ],
+        "runtimeExecutable": "/home/jm/.nvm/versions/node/v14.5.0/bin/node"
+      }
+    ]
+  }
+}
