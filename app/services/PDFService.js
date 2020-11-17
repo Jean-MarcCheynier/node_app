@@ -1,16 +1,60 @@
 
-const generate = (statement) => {
+const pdfFiller = require('pdffiller')
+const fs = require('fs')
+const path = require('path')
+const StatementFlattenService = require('./statementFlattenService')
+const logger = require('../config/winston')
 
+const currentPath = process.cwd()
+
+const sourcePDF = path.join(currentPath, 'public', 'European-Accident-Statement_form.pdf')
+/**
+ * TODO : if file at path is older than file online, download and replace file
+ * options (not exhaustive) : check last modified at each generation, check once every X, force replace every X 
+ * @param {string} path
+ */
+const checkValidity = (path) =>{
+  if (fs.existsSync(path)) {
+    return true
+  } else {
+    return false
+  }
 }
 
-const autre = () => {
+/**
+ * using the fiels from statement , fill the template pdf and store it 
+ * @param {AccidentStatementSchema} statement 
+ */
+const generate = (statement, id) => {
+  // template = check_validity(sourcePDF)
+  if (!fs.existsSync(path)) {
+    logger.debug(`error or path to source with cwd = ${currentPath}`)
+  }
+
+  const destinationPDF = path.join(currentPath, 'public', 'tmp', `${id}.pdf`)
+  const flattenData = StatementFlattenService.flatten(statement)
+  logger.debug(`flatten data =${JSON.stringify(flattenData)}`)
+  pdfFiller.fillFormWithFlatten(sourcePDF, destinationPDF, flattenData, false, function (err) {
+    if (!err) {
+      return destinationPDF
+    } else {
+      logger.error(`error ${err} while generating pdf for statement ${id}`)
+    }
+  })
+  return destinationPDF
+}
+
+/**
+ * fills a statement using the corrections comming from the user
+ * @param {*} statement 
+ */
+const complete = (statement) => {
 
 }
 
 const PDFService = {
   generate,
-  autre
-
+  complete
 }
 
 module.exports = PDFService
