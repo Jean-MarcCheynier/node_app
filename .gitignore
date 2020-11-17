@@ -69,4 +69,4 @@ Blog
 About
 
 node-node_modules
-public/tmp
+public/tmp/*

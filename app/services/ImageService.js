@@ -34,11 +34,13 @@ const classify = async (file, imageRef) => {
       case DOC_TYPES.DRIVING_LICENSE:
         logger.debug('2')
         await analyseDocument(imageRef.documentType, file)
-          .then(analyse => {
-            imageRef.classification = analyse
+          .then(analyze => {
+            logger.info('Analyse success')
+            imageRef.classification = analyze
             imageRef.classificationStatus = 'SUCCESS'
           })
           .catch(e => {
+            logger.error('Analyse Error')
             imageRef.attemptToClassiy = new Date()
             imageRef.classificationStatus = 'FAILED'
           })
@@ -68,13 +70,44 @@ const analyseDocument = async (documentType, file) => {
   }
   const operationLocationURL = await AzureFRService.postFile(modelId, file)
   await sleep(4000)
-  const analyse = await AzureFRService.getResult(operationLocationURL)
+  const analyze = await AzureFRService.getResult(operationLocationURL)
     .catch(e => {
       logger.log('error', 'Unable to post file to azure form recognizer')
       throw (new Error({ message: 'Unable to post file to azure form recognizer' }))
     })
-  logger.info('Analyse OK')
-  return analyse
+  logger.info('Analyse OK, ... mapping fields')
+  // !No clear if we have only on object here
+
+  const documentResults = (analyze.analyzeResult.documentResults) ? analyze.analyzeResult.documentResults[0] : null
+  let data = {}
+  if (documentResults) {
+    switch (modelId) {
+      case FORM_RECOGNIZER_MODEL_ID.ID_FR : {
+        const { NOM: name, FIRSTNAME: givenNames, BIRTHDATE: birthDate, NUMBER: nationalId, MRZ1: mrz1, MRZ2: mrz2 } = documentResults.fields
+        data = { name, givenNames, birthDate, nationalId, mrz1, mrz2 }
+        break
+      }
+      case FORM_RECOGNIZER_MODEL_ID.ID_BE : {
+        const { NOM: name, FIRSTNAME: givenNames, BIRTHDATE: birthDate, 'NATIONAL REGISTRY N': nationalId, 'CARD N': cardNumber, EXPIRE: expiryDate, NATIONALITY: nationality, Sex: sex } = documentResults.fields
+        data = { name, givenNames, birthDate, nationalId, cardNumber, expiryDate, nationality, sex }
+        break
+      }
+      case FORM_RECOGNIZER_MODEL_ID.GREEN_CARD : {
+        const { Name: fullname, Policy: policy, 'Valid From': validFrom, 'Valid Until': validUntil, 'Vehicle Number': vehicleNumber, Model: vehicleModel, Type: vehicleType } = documentResults.fields
+        data = { name, fullname, policy, validFrom, validUntil, vehicleNumber, vehicleModel, vehicleType }
+        break
+      }
+      case FORM_RECOGNIZER_MODEL_ID.DRIVING_LICENSE : {
+        const { NOM: name, FIRSTNAME: givenNames, BIRTHDATE: birthDate, 'LICENSE NUMBER': licenseId, 'DELIVERDED ON': deliveredOn, VALIDITY: expiryDate, 'Validity Bis': otherExpiry, MRZ: mrz } = documentResults.fields
+        data = { name, givenNames, birthDate, licenseId, deliveredOn, expiryDate, otherExpiry, mrz }
+        break
+      }
+      default :
+        break
+    }
+  }
+
+  return data
 }
 
 const classifyDamage = async (file) => {
@@ -179,12 +212,7 @@ const save = function (user, imageRef, callback) {
 }
 
 const findById = function (imageId, callback) {
-  Image.findById(imageId, function (err, data) {
-    if (err) {
-      return console.error(err)
-    }
-    callback(err, data)
-  })
+  return Image.findById(imageId)
 }
 
 const findAll = function (callback) {

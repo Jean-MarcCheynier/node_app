@@ -27,15 +27,39 @@ const attachImageRef = async (statement, imageRef, driver = 'driverA') => {
     logger.prompt('Statement updated with new image')
     return data
   })
-  const result = await newStatement.populate('driverA.idCard').execPopulate()
+  const result = await newStatement
+    .populate('driverA.idCard.imageRef')
+    .populate('driverA.greenCard.imageRef')
+    .populate('driverA.drivingLicense.imageRef')
+    .populate('driverB.idCard.imageRef')
+    .populate('driverB.greenCard.imageRef')
+    .populate('driverB.drivingLicense.imageRef')
+    .execPopulate()
   return result
 }
 
-const findByOwnerId = (ownerId) => AccidentStatement.find({ owner: ownerId })
-const findById = (id) => AccidentStatement.findById(id)
+const findByOwnerId = (ownerId) => AccidentStatement
+  .find({ owner: ownerId })
+  .populate('driverA.idCard.imageRef')
+  .populate('driverA.greenCard.imageRef')
+  .populate('driverA.drivingLicense.imageRef')
+  .populate('driverB.idCard.imageRef')
+  .populate('driverB.greenCard.imageRef')
+  .populate('driverB.drivingLicense.imageRef')
+
+const findById = (id) => AccidentStatement
+  .findById(id)
+  .populate('driverA.idCard.imageRef')
+  .populate('driverA.greenCard.imageRef')
+  .populate('driverA.drivingLicense.imageRef')
+  .populate('driverB.idCard.imageRef')
+  .populate('driverB.greenCard.imageRef')
+  .populate('driverB.drivingLicense.imageRef')
+
 const save = (data) => {
   const accidentStatement = new AccidentStatement(data)
   return accidentStatement.save(data)
+    
 }
 /**
 * TODO: Secure this route
