@@ -5,7 +5,7 @@ const unflatten = (flatStatement) =>{
 const flatten = (statement) =>{
   let flatStatement = {}
 
-  flatStatement.NameA = "Alice"
+  flatStatement.NameA = statement._id
   flatStatement.FirstNameA = "statement.driverA.firstname"
   // flatStatement.AddressA = statement.driverA.
   // flatStatement.ZipA = statement.driverA.

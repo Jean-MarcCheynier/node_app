@@ -27,18 +27,18 @@ const checkValidity = (path) =>{
  */
 const generate = (statement, id) => {
   // template = check_validity(sourcePDF)
-  if (!fs.existsSync(path)) {
+  if (!fs.existsSync(sourcePDF)) {
     logger.debug(`error or path to source with cwd = ${currentPath}`)
   }
 
   const destinationPDF = path.join(currentPath, 'public', 'tmp', `${id}.pdf`)
   const flattenData = StatementFlattenService.flatten(statement)
   logger.debug(`flatten data =${JSON.stringify(flattenData)}`)
-  pdfFiller.fillFormWithFlatten(sourcePDF, destinationPDF, flattenData, false, function (err) {
-    if (!err) {
-      return destinationPDF
-    } else {
+  pdfFiller.fillFormWithFlatten(sourcePDF, destinationPDF, flattenData, false, function (err, fdfdata) {
+    if (err) {
       logger.error(`error ${err} while generating pdf for statement ${id}`)
+      logger.debug(`${fdfdata}`)
+      throw err
     }
   })
   return destinationPDF

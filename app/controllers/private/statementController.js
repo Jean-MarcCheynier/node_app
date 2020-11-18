@@ -6,6 +6,7 @@ const multer = require('multer')
 const ImageService = require('../../services/ImageService')
 const StatementService = require('../../services/statementService')
 const PDFService = require('../../services/PDFService')
+const fs = require('fs')
 const logger = require('../../config/winston')
 
 // STORAGE CONFIG TO EXTERNALIZE
@@ -65,16 +66,26 @@ module.exports = function () {
       if (!statementId) {
         logger.error('Missing parameter \'statementId\'')
         res.status(403).send({ message: 'Param statementId is missing' })
-        return
       }
 
       const statement = await StatementService.findById(statementId).catch(e => {
         logger.error(`Missing statement with Id : ${statementId}`)
+        res.status(500).send({ message: 'could not find the required statement to generate pdf' })
       })
-
-      var pdf = PDFService.generate(statement, statementId)
-      logger.info(`sending pdf for request ${statementId}`)
-      res.sendFile(pdf)
+      try {
+        const pdf = PDFService.generate(statement, statementId)
+        logger.info(`sending pdf for request ${statementId}`)
+        fs.readFile(pdf, 'base64', function (err, data) {
+          if (err) throw err
+          res.status(200).json({
+            status: 'success',
+            data: data
+          })
+        })
+      } catch (error) {
+        console.error(error)
+        res.status(500).send({ message: `error ${error} while generating pdf` })
+      }
     })
 
   router.route('/:statementId/upload/doc/:docType')
