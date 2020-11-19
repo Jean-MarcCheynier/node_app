@@ -1,10 +1,38 @@
+const logger = require("../config/winston")
+
+const toString = (dict) => {
+  logger.debug(dict)
+  for (var key in dict) {
+    logger.debug(dict[key])
+    dict[key] = dict[key].valueString
+  }
+}
+
 const unflatten = (flatStatement) =>{
   return null
 }
-
+/**
+ * turns a statement of form:
+ *status: { type: String, enum: ['new', 'pending', 'review', 'complete'] },
+  owner: { type: mongoose.Schema.ObjectId, ref: 'User' },
+  driverA: { type: DriverSchema },
+  driverB: { type: DriverSchema },
+  damage: { type: DamageSchema }
+  into a series of fields for insertion in the PDF
+ * @param {*} statement
+ */
 const flatten = (statement) =>{
   let flatStatement = {}
 
+  if (statement.driverA) {
+    const fields = statement.driverA.idCard.imageRef
+    logger.debug(fields)
+    const { name: NameDriverA, givenNames: FirstNameDriverA, birthDate: birthDateDriverA } = fields.classification
+    flatStatement = { ...flatStatement, NameDriverA, FirstNameDriverA, birthDateDriverA }
+    toString(flatStatement)
+  } else {
+    //logger.debug(`empty field DriverA in statement ${statement}`)
+  }
   flatStatement.NameA = statement._id
   flatStatement.FirstNameA = "statement.driverA.firstname"
   // flatStatement.AddressA = statement.driverA.
@@ -23,7 +51,7 @@ const flatten = (statement) =>{
 
   // flatStatement.NameDriverA 
   // flatStatement.FirstNameDriverA
-  // flatStatement.AirthdateDriverA
+  // flatStatement.BirthdateDriverA
   // flatStatement.AddressDriverA
   // flatStatement.countryDriverA
   // flatStatement.ContactDriverA

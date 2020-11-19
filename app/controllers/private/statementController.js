@@ -73,13 +73,17 @@ module.exports = function () {
         res.status(500).send({ message: 'could not find the required statement to generate pdf' })
       })
       try {
-        const pdf = PDFService.generate(statement, statementId)
-        logger.info(`sending pdf for request ${statementId}`)
-        fs.readFile(pdf, 'base64', function (err, data) {
-          if (err) throw err
-          res.status(200).json({
-            status: 'success',
-            data: data
+        logger.debug('starting pdf generation')
+        const temp = PDFService.generate(statement, statementId)
+        await temp.then((file) => {
+          logger.debug(fs.existsSync(file))
+          logger.info(`sending pdf for request ${statementId}`)
+          fs.readFile(file, 'base64', function (err, data) {
+            if (err) throw err
+            res.status(200).json({
+              status: 'success',
+              data: data
+            })
           })
         })
       } catch (error) {
