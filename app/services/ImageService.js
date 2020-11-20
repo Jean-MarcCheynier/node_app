@@ -92,7 +92,6 @@ const analyseDocument = async (documentType, file) => {
   // !No clear if we have only on object here
   const documentResults = (analyze.analyzeResult.documentResults) ? analyze.analyzeResult.documentResults[0] : null
   let data = {}
-  
   if (documentResults) {
     switch (modelId) {
       case FORM_RECOGNIZER_MODEL_ID.ID_FR : {

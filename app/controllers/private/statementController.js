@@ -61,7 +61,7 @@ module.exports = function () {
   router.route('/:statementId/pdf')
     .get(async (req, res) => {
       const { statementId } = req.params
-      //const userId = req.user._id
+      // const userId = req.user._id
 
       if (!statementId) {
         logger.error('Missing parameter \'statementId\'')

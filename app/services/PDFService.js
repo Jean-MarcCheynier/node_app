@@ -35,6 +35,7 @@ async function generate (statement, id) {
   const destinationPDF = path.join(currentPath, 'public', 'tmp', `${id}.pdf`)
   const flattenData = StatementFlattenService.flatten(statement)
   logger.debug(`flatten data =${JSON.stringify(flattenData)}`)
+  // logger.debug(`sourcePDF ${sourcePDF} and destinationPDF ${destinationPDF}`)
   await fillFormWithFlatten(sourcePDF, destinationPDF, flattenData, false)
   return destinationPDF
 }
