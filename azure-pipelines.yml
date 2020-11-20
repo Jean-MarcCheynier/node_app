@@ -14,7 +14,10 @@ steps:
   inputs:
     versionSpec: '10.x'
   displayName: 'Install Node.js'
-  
+- task: CmdLine@2
+  inputs:
+    script: 'sudo apt install pdftk'
+  displayName: 'Install PDFTK'
 
 - script: |
     npm install
