@@ -1,6 +1,7 @@
 
 const Image = require('../models/image')
 const ImageRef = require('../models/imageRef')
+const DamageAPIService = require('../services/DamageAPIService')
 const { FORM_RECOGNIZER_MODEL_ID, DOC_TYPES } = require('../utils')
 const AzureFRService = require('./AzureFormRecognizerService')
 const fs = require('fs')
@@ -32,7 +33,6 @@ const classify = async (file, imageRef) => {
       case DOC_TYPES.ID_BE:
       case DOC_TYPES.GREEN_CARD:
       case DOC_TYPES.DRIVING_LICENSE:
-        logger.debug('2')
         await analyseDocument(imageRef.documentType, file)
           .then(analyze => {
             logger.info('Analyse success')
@@ -46,7 +46,20 @@ const classify = async (file, imageRef) => {
           })
         break
       case DOC_TYPES.DAMAGE:
-        await classifyDamage(imageRef)
+        logger.info('Classifying damage ...')
+        await DamageAPIService.postDamage(file)
+          .then(data => {
+            imageRef.attemptToClassiy = new Date()
+            imageRef.classificationStatus = 'SUCCESS'
+            imageRef.classification = data.classification
+            imageRef.RID = data.RID
+            logger.info('API damage returned classified image')
+            console.log(data)
+          })
+          .catch(e => {
+            console.log(e)
+          })
+
         break
       default:
         imageRef.attemptToClassiy = new Date()
@@ -108,10 +121,6 @@ const analyseDocument = async (documentType, file) => {
   }
 
   return data
-}
-
-const classifyDamage = async (file) => {
-  return true
 }
 
 /**

@@ -8,29 +8,28 @@ const DriverSchema = mongoose.Schema({
   phone: { type: String },
   email: { type: String },
   greenCard: {
-    imageRef: { type: mongoose.Schema.ObjectId, ref: 'ImageRef' },
-    info: { type: mongoose.Mixed }
+    required: { type: Boolean, default: true },
+    imageRef: { type: mongoose.Schema.ObjectId, ref: 'ImageRef' }
   },
   idCard: {
-    imageRef: { type: mongoose.Schema.ObjectId, ref: 'ImageRef' },
-    info: { type: mongoose.Mixed }
+    required: { type: Boolean, default: true },
+    imageRef: { type: mongoose.Schema.ObjectId, ref: 'ImageRef' }
   },
   drivingLicense: {
-    imageRef: { type: mongoose.Schema.ObjectId, ref: 'ImageRef' },
-    info: { type: mongoose.Mixed }
+    required: { type: Boolean, default: true },
+    imageRef: { type: mongoose.Schema.ObjectId, ref: 'ImageRef' }
+  },
+  damages: {
+    required: { type: Boolean, default: true },
+    imageRefArray: [{ type: mongoose.Schema.ObjectId, ref: 'ImageRef' }]
   }
-})
-
-const DamageSchema = mongoose.Schema({
-  images: [{ type: mongoose.Schema.ObjectId, ref: 'ImageRef' }]
 })
 
 const AccidentStatementSchema = mongoose.Schema({
   status: { type: String, enum: ['new', 'pending', 'review', 'complete'] },
   owner: { type: mongoose.Schema.ObjectId, ref: 'User' },
   driverA: { type: DriverSchema },
-  driverB: { type: DriverSchema },
-  damage: { type: DamageSchema }
+  driverB: { type: DriverSchema }
 },
 {
   timestamps: {
@@ -41,5 +40,6 @@ const AccidentStatementSchema = mongoose.Schema({
 
 // create the model for users and expose it to our app
 const AccidentStatement = mongoose.model('AccidentStatement', AccidentStatementSchema)
+const Driver = mongoose.model('Driver', DriverSchema)
 
-module.exports = AccidentStatement
+module.exports = { AccidentStatement, Driver }
