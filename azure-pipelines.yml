@@ -15,7 +15,7 @@ steps:
 - script: | 
     sudo add-apt-repository ppa:malteworld/ppa
     sudo apt-get update
-    sudo apt-get install pdftk
+    sudo snap install pdftk 
   displayName: 'install'
 
 - script: |
