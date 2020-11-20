@@ -15,11 +15,10 @@ steps:
     versionSpec: '10.x'
   displayName: 'Install Node.js'
 
-- script: sudo add-apt-repository ppa:malteworld/ppa
-  displayName: 'add to repo'
-- script: sudo apt update
-  displayName: 'update'
-- script: sudo apt install pdftk
+- script: | 
+    sudo add-apt-repository ppa:malteworld/ppa
+    sudo apt-get update
+    sudo apt-get install pdftk
   displayName: 'install'
 
 - script: |
