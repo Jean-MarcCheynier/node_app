@@ -90,9 +90,9 @@ const analyseDocument = async (documentType, file) => {
     })
   logger.info('Analyse OK, ... mapping fields')
   // !No clear if we have only on object here
-
   const documentResults = (analyze.analyzeResult.documentResults) ? analyze.analyzeResult.documentResults[0] : null
   let data = {}
+  
   if (documentResults) {
     switch (modelId) {
       case FORM_RECOGNIZER_MODEL_ID.ID_FR : {
@@ -106,8 +106,8 @@ const analyseDocument = async (documentType, file) => {
         break
       }
       case FORM_RECOGNIZER_MODEL_ID.GREEN_CARD : {
-        const { Name: fullname, Policy: policy, 'Valid From': validFrom, 'Valid Until': validUntil, 'Vehicle Number': vehicleNumber, Model: vehicleModel, Type: vehicleType } = documentResults.fields
-        data = { name, fullname, policy, validFrom, validUntil, vehicleNumber, vehicleModel, vehicleType }
+        const { Name: fullname, POLICY: policy, 'VALID FROM': validFrom, 'VALID UNTIL': validUntil, 'VEHICLE NUMBER': vehicleNumber, MODEL: vehicleModel, TYPE: vehicleType } = documentResults.fields
+        data = { fullname, policy, validFrom, validUntil, vehicleNumber, vehicleModel, vehicleType }
         break
       }
       case FORM_RECOGNIZER_MODEL_ID.DRIVING_LICENSE : {
