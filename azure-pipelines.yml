@@ -14,12 +14,10 @@ steps:
   inputs:
     versionSpec: '10.x'
   displayName: 'Install Node.js'
-- task: CmdLine@2
-  inputs:
-    script: 'sudo apt install pdftk'
-  displayName: 'Install PDFTK'
 
-- script: |
-    npm install
-    npm build
-  displayName: 'npm install and build'
+- script: sudo add-apt-repository ppa:malteworld/ppa
+  displayName: 'add to repo'
+- script: sudo apt update
+  displayName: 'update'
+- script: sudo apt install pdftk
+  displayName: 'install'
