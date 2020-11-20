@@ -21,3 +21,9 @@ steps:
   displayName: 'update'
 - script: sudo apt install pdftk
   displayName: 'install'
+
+- script: |
+    npm install
+    npm build
+  displayName: 'npm install and build'
+
