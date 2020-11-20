@@ -9,6 +9,7 @@ module.exports = function (app, passport) {
     next()
   })
   // Secure api routes
+  app.use('/alive', function (req, res) { res.json('Alive') })
   app.all('/api/*', passport.authenticate('jwt', { session: false }))
 
   // Insert routes below
