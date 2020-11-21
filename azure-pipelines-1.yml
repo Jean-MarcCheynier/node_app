@@ -37,9 +37,9 @@ stages:
 
 
     - script: |
-          sudo add-apt-repository ppa:malteworld/ppa
-          sudo apt-get update
-          sudo snap install pdftk 
+        sudo add-apt-repository ppa:malteworld/ppa
+        sudo apt-get update
+        sudo snap install pdftk 
       displayName: 'Command Line Script'
 
 
@@ -81,6 +81,6 @@ stages:
               azureSubscription: $(azureSubscription)
               appType: webAppLinux
               appName: $(webAppName)
-              runtimeStack: 'NODE|10.10'
+              runtimeStack: 'NODE|12.16'
               package: $(Pipeline.Workspace)/drop/$(Build.BuildId).zip
               startUpCommand: 'npm run start'
