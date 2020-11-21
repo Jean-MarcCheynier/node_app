@@ -4,9 +4,8 @@
   "description": "Js",
   "main": "index.js",
   "scripts": {
-    "test": "test",
     "start": "node index.js",
-    "dev": "nodemon ./aoo/index.js localhost 8080",
+    "dev": "nodemon ./app/index.js localhost 8080",
     "debug": "nodemon index.js --inspect"
   },
   "keywords": [
